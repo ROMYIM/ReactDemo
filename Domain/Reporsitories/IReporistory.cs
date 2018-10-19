@@ -5,13 +5,13 @@ using ReactDemo.Domain.Models;
 
 namespace ReactDemo.Domain.Reporsitories
 {
-    public interface Reporistory<TEntity> where TEntity : Entity
+    public interface IReporistory<TEntity> where TEntity : Entity
     {
-        void Add(TEntity entity);
+        int Add(TEntity entity);
 
-        void Delete(TEntity entity);
+        int Delete(TEntity entity);
 
-        void Update(TEntity entity);
+        int Update(TEntity entity);
 
         TEntity FindOne(int id);
 

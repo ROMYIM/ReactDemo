@@ -9,7 +9,7 @@ namespace ReactDemo.Domain.Models
         [Key, Column("id")]
         public int? ID { get; set; }
 
-        [Column("create_time")]
+        [Column("create_time"), DataType(DataType.DateTime)]
         public DateTime CreateTime { get; set; }
 
         public Entity()

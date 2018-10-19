@@ -18,13 +18,5 @@ namespace ReactDemo.Domain.Models.Party
 
         public ICollection<Member> Members { get; set; }
 
-        public int CountMemebers()
-        {
-            if (Members != null)
-            {
-                return Members.Count;
-            }
-            return 0;
-        }
     }
 }

@@ -13,6 +13,9 @@ namespace ReactDemo.Domain.Models.Party
         [ForeignKey("OrganizationID")]
         public Organization Organization { get; set; }
 
+        [Column("role")]
+        public PartyRole Role { get; set; }
+
         public PersonalInformation PersonalInformation { get; set; }
 
         [Column("position")]
@@ -20,5 +23,10 @@ namespace ReactDemo.Domain.Models.Party
 
         [Column("join_time"), DataType(DataType.Date)]
         public DateTime JoinTime { get; set; }
+    }
+
+    public enum PartyRole
+    {
+        党书记, 党委, 党总支, 党支书
     }
 }
