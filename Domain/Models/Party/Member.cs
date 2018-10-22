@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ReactDemo.Application.Dtos;
 
 namespace ReactDemo.Domain.Models.Party
 {
@@ -23,6 +24,25 @@ namespace ReactDemo.Domain.Models.Party
 
         [Column("join_time"), DataType(DataType.Date)]
         public DateTime JoinTime { get; set; }
+
+        public Member(MemberDto dto)
+        {
+            this.ID = dto.MemberID;
+            this.OrganizationID = dto.OrganizationID;
+            this.Role = dto.Role;
+            this.JoinTime = dto.JoinTime;
+            this.Position = dto.Position;
+            this.PersonalInformation = new PersonalInformation
+            {
+                Name = dto.Name,
+                ID = dto.CardNo,
+                Sex = dto.Sex,
+                NativePlace = dto.NativePlace,
+                Nation = dto.Nation,
+                Mobile = dto.Mobile,
+                BirthTime = dto.BirthTime
+            };
+        }
     }
 
     public enum PartyRole

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ReactDemo.Domain.Models.Party;
 using ReactDemo.Domain.Models.System;
 
-namespace ReactDemo.Infrastructure.Reporistories
+namespace ReactDemo.Infrastructure.Repositories
 {
     public class DatabaseContext : DbContext
     {
