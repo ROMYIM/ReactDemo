@@ -12,18 +12,20 @@ namespace ReactDemo.Domain.Models.Party
         public int OrganizationID { get; set; }
 
         [ForeignKey("OrganizationID")]
-        public Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; }
 
         [Column("role")]
         public PartyRole Role { get; set; }
 
-        public PersonalInformation PersonalInformation { get; set; }
+        public virtual PersonalInformation PersonalInformation { get; set; }
 
         [Column("position")]
-        public string Position { get; set; }
+        public virtual string Position { get; set; }
 
         [Column("join_time"), DataType(DataType.Date)]
-        public DateTime JoinTime { get; set; }
+        public virtual DateTime JoinTime { get; set; }
+
+        public Member() {}
 
         public Member(MemberDto dto)
         {

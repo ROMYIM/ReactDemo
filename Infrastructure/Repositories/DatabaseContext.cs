@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ReactDemo.Domain.Models.Conference;
 using ReactDemo.Domain.Models.Party;
 using ReactDemo.Domain.Models.System;
 
@@ -7,9 +8,10 @@ namespace ReactDemo.Infrastructure.Repositories
     public class DatabaseContext : DbContext
     {
         
-        public DbSet<Organization> Organization { get; set; }
-        public DbSet<Member> Member { get; set; }
-        public DbSet<User> User { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
+        public DbSet<Member> Members { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Conference> Conferences { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {

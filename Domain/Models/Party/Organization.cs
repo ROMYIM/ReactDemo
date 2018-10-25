@@ -11,15 +11,17 @@ namespace ReactDemo.Domain.Models.Party
         [Column("organization_name")]
         public string Name { get; set; }
 
-        public Contact Contact { get; set; }
+        public virtual Contact Contact { get; set; }
 
         [Column("user_id")]
         public int? UserID { get; set; }
 
         [ForeignKey("UserID")]
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
-        public ICollection<Member> Members { get; set; }
+        public virtual ICollection<Member> Members { get; set; }
+
+        public Organization() {}
 
         public Organization(OrganizationDto dto)
         {

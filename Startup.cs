@@ -23,7 +23,7 @@ namespace ReactDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySQL(Configuration.GetConnectionString("test")));
+            services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseLazyLoadingProxies().UseMySQL(Configuration.GetConnectionString("test")));
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
