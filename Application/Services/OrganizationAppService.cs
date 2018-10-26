@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Party;
 using ReactDemo.Domain.Repositories;
@@ -12,6 +13,11 @@ namespace ReactDemo.Application.Services
         public OrganizationAppService(IOrganizationRepository organizationRepository)
         {
             this._organizationRepository = organizationRepository;
+        }
+
+        public IList<Organization> GetListByPage(Page page)
+        {
+            throw new System.NotImplementedException();
         }
 
         Organization IApplicationService<Organization, OrganizationDto>.CreateEntity(OrganizationDto dto)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models;
 
 namespace ReactDemo.Domain.Repositories
@@ -16,5 +17,9 @@ namespace ReactDemo.Domain.Repositories
         TEntity FindOne(Expression<Func<TEntity, bool>> predicate);
 
         IList<TEntity> FindList(Expression<Func<TEntity, bool>> predicate);
+
+        IList<TEntity> FindList(Expression<Func<TEntity, bool>> predicate, Page page); 
+
+        int SaveChanges();
     }
 }

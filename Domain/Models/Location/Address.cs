@@ -26,10 +26,20 @@ namespace ReactDemo.Domain.Models.Location
         [Column("lat")]
         public decimal Lat { get; set; }
 
+        [Column("state")]
+        public AddressState State { get; set; }
+
         public override string ToString()
         {
             return $"{Province.ToString()}{City.ToString()}{Town.ToString()}{County.ToString()}{Detail}";
         }
 
+    }
+
+    public enum AddressState
+    {
+        OCCUPIED,
+
+        IDLE
     }
 }

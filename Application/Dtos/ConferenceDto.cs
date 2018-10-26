@@ -5,6 +5,9 @@ namespace ReactDemo.Application.Dtos
 {
     public class ConferenceDto
     {
+
+        public int? ConferenceID { get; set; }
+
         [Required, DataType(DataType.DateTime)]
         public DateTime StartTime { get; set; }
 

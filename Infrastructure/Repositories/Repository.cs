@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models;
 using ReactDemo.Domain.Repositories;
 
@@ -43,6 +44,23 @@ namespace ReactDemo.Infrastructure.Repositories
         void IRepository<TEntity>.Update(TEntity entity)
         {
             Entities.Update(entity);
+        }
+
+        int IRepository<TEntity>.SaveChanges()
+        {
+            return _databaseContext.SaveChanges();
+        }
+
+        IList<TEntity> IRepository<TEntity>.FindList(Expression<Func<TEntity, bool>> predicate, Page page)
+        {
+            if (page != null)
+            {
+                return Entities.Where(predicate).Skip(page.Index).Take(page.Count).ToList();
+            }
+            else
+            {
+                return Entities.Where(predicate).ToList();
+            }
         }
     }
 }
