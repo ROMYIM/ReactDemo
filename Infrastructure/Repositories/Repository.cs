@@ -54,11 +54,11 @@ namespace ReactDemo.Infrastructure.Repositories
         {
             if (page != null)
             {
-                return Entities.Where(predicate).Skip(page.Index).Take(page.Count).ToList();
+                return Entities.Where(predicate).OrderByDescending(e => e.CreateTime).Skip(page.Index).Take(page.Count).ToList();
             }
             else
             {
-                return Entities.Where(predicate).ToList();
+                return Entities.Where(predicate).OrderByDescending(e => e.CreateTime).ToList();
             }
         }
     }
