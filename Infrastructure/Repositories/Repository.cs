@@ -18,7 +18,6 @@ namespace ReactDemo.Infrastructure.Repositories
         public Repository(DatabaseContext databaseContext)
         {
             _databaseContext = databaseContext;
-            Entities = _databaseContext.Set<TEntity>(); 
         }
 
         void IRepository<TEntity>.Add(TEntity entity)

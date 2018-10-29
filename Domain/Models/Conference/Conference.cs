@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Location;
@@ -10,10 +11,10 @@ namespace ReactDemo.Domain.Models.Conference
     public class Conference : AggregateRoot
     {
 
-        [Column("start_time")]
+        [Column("start_time"), DataType(DataType.DateTime)]
         public DateTime StartTime { get; set; }
 
-        [Column("end_time")]
+        [Column("end_time"), DataType(DataType.DateTime)]
         public DateTime EndTime { get; set; }
 
         [Column("content")]
@@ -25,6 +26,7 @@ namespace ReactDemo.Domain.Models.Conference
         [ForeignKey("HallID")]
         public virtual Hall Hall { get; set; }
 
+        [NotMapped]
         public ICollection<ConferenceMember> Members { get; private set; }
 
         public Conference() {}

@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReactDemo.Domain.Models.Location
 {
+    [Owned]
     public class Address
     {
         [Column("province")]
@@ -11,11 +13,11 @@ namespace ReactDemo.Domain.Models.Location
         [Column("city")]
         public City City { get; set; }
 
-        [Column("town")]
-        public Town Town { get; set; }
-
         [Column("county")]
         public County County { get; set; }
+
+        [Column("town")]
+        public Town Town { get; set; }
 
         [Column("detail")]
         public string Detail { get; set; }
@@ -31,7 +33,7 @@ namespace ReactDemo.Domain.Models.Location
 
         public override string ToString()
         {
-            return $"{Province.ToString()}{City.ToString()}{Town.ToString()}{County.ToString()}{Detail}";
+            return $"{Province.ToString()}{City.ToString()}{County.ToString()}{Town.ToString()}{Detail}";
         }
 
     }

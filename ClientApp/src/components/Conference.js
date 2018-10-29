@@ -19,7 +19,7 @@ export class Conference extends Component {
         });
     }
 
-    static renderForecastsTable(conferences) {
+    static renderConferencesTable(conferences) {
         return (
             <table className='table'>
                 <thead>
@@ -33,10 +33,9 @@ export class Conference extends Component {
                 <tbody>
                     {conferences.map(conference =>
                         <tr key={conference.conferenceId}>
-                            <td>{conference.dateFormatted}</td>
-                            <td>{conference.temperatureC}</td>
-                            <td>{conference.temperatureF}</td>
-                            <td>{conference.summary}</td>
+                            <td>{conference.startTime}</td>
+                            <td>{conference.endTime}</td>
+                            <td>{conference.hallName}</td>
                         </tr>
                     )}
                 </tbody>
@@ -47,7 +46,7 @@ export class Conference extends Component {
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : FetchData.renderForecastsTable(this.state.forecasts);
+            : Conference.renderConferencesTable(this.state.conferences);
 
         return (
             <div>

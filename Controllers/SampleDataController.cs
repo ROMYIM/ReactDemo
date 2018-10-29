@@ -43,16 +43,16 @@ namespace ReactDemo.Controllers
         }
 
         [HttpGet("[action]")]
-        public IEnumerable<ConferenceItemVo> Conferences([FromQuery]Page page)
+        public IList<ConferenceItemVo> Conferences([FromQuery]Page page)
         {
             _logger.LogDebug("list conferences");
             var conferences = _conferenceAppService.GetListByPage(page);
-            var conferenceItemVos = new List<ConferenceVo>(conferences.Count);
+            var conferenceItemVos = new List<ConferenceItemVo>(conferences.Count);
             foreach (var conference in conferences)
             {
-                conferenceItemVos.Add(new ConferenceVo(conference));
+                conferenceItemVos.Add(new ConferenceItemVo(conference));
             }
-            return (IEnumerable<ConferenceItemVo>) conferenceItemVos;
+            return  conferenceItemVos;
         }
 
         public class WeatherForecast

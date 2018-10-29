@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReactDemo.Domain.Models.Party
 {
+    [Owned]
     public class Contact
     {
 

@@ -7,6 +7,7 @@ namespace ReactDemo.Infrastructure.Repositories
     {
         public HallRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
+            this.Entities = _databaseContext.Halls;
         }
     }
 }
