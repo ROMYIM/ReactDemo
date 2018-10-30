@@ -17,13 +17,7 @@ namespace ReactDemo.Application.Services
 
         public IList<Organization> GetListByPage(Page page)
         {
-            throw new System.NotImplementedException();
-        }
-
-        Organization IApplicationService<Organization, OrganizationDto>.CreateEntity(OrganizationDto dto)
-        {
-            var organization = new Organization(dto);
-            return organization;
+            return _organizationRepository.FindList(o => 1 == 1, page);
         }
     }
 }

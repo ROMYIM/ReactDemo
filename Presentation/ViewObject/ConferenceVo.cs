@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using ReactDemo.Domain.Models.Conference;
+using ReactDemo.Domain.Models.Meeting;
 
 namespace ReactDemo.Presentation.ViewObject
 {

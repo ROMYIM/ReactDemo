@@ -1,7 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using ReactDemo.Domain.Models;
-using ReactDemo.Domain.Models.Conference;
+using ReactDemo.Domain.Models.Meeting;
 using ReactDemo.Domain.Models.Party;
 using ReactDemo.Domain.Models.System;
 

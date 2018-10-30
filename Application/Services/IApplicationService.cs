@@ -4,10 +4,8 @@ using ReactDemo.Domain.Models;
 
 namespace ReactDemo.Application.Services
 {
-    public interface IApplicationService<TEntity, TDto> where TEntity : Entity
+    public interface IApplicationService<TEntity> where TEntity : Entity
     {
-        TEntity CreateEntity(TDto dto);
-
         IList<TEntity> GetListByPage(Page page);
     }
 }

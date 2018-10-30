@@ -10,9 +10,9 @@ namespace ReactDemo.Infrastructure.Repositories
     public class MemberRepository : Repository<Member>, IMemberRepository
     {
 
-        public MemberRepository(DatabaseContext context) : base(context)
+        public MemberRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
-            this.Entities = _databaseContext.Members;
+            this.Entities = databaseContext.Members;
         }
 
     }

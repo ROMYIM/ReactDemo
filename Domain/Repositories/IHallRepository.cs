@@ -1,4 +1,4 @@
-using ReactDemo.Domain.Models.Conference;
+using ReactDemo.Domain.Models.Meeting;
 
 namespace ReactDemo.Domain.Repositories
 {

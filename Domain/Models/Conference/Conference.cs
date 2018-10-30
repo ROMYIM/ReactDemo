@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Location;
 
-namespace ReactDemo.Domain.Models.Conference
+namespace ReactDemo.Domain.Models.Meeting
 {
     [Table("pb_conference")]
     public class Conference : AggregateRoot
@@ -19,6 +19,9 @@ namespace ReactDemo.Domain.Models.Conference
 
         [Column("content")]
         public string Content { get; set; }
+
+        [Column("organizer_id")]
+        public int OrganizerID { get; set; }
 
         [Column("hall_id")]
         public int HallID { get; set; }

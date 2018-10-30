@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using ReactDemo.Domain.Models.Location;
 
-namespace ReactDemo.Domain.Models.Conference
+namespace ReactDemo.Domain.Models.Meeting
 {
 
     [Table("pb_hall")]

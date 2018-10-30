@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using ReactDemo.Application.Dtos;
@@ -33,6 +34,21 @@ namespace ReactDemo.Domain.Models.Party
                 QQ = dto.QQ,
                 Email = dto.Email
             };
+        }
+
+        public Member AddMember(MemberDto dto)
+        {
+            if (dto.OrganizationID != this.ID)
+            {
+                throw new Exception();
+            }
+            var member = new Member(dto);
+            if (Members.Contains(member))
+            {
+                throw new Exception();
+            }
+            Members.Add(member);
+            return member;
         }
 
     }

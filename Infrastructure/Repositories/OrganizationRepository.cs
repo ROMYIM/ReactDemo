@@ -10,9 +10,9 @@ namespace ReactDemo.Infrastructure.Repositories
     public class OrganizationRepository : Repository<Organization>, IOrganizationRepository
     {
 
-        public OrganizationRepository(DatabaseContext context) : base(context)
+        public OrganizationRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
-            this.Entities = _databaseContext.Organizations;
+            this.Entities = databaseContext.Organizations;
         }
 
     }

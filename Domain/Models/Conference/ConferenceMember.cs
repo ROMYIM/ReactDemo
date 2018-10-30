@@ -1,4 +1,4 @@
-namespace ReactDemo.Domain.Models.Conference
+namespace ReactDemo.Domain.Models.Meeting
 {
     public class ConferenceMember
     {

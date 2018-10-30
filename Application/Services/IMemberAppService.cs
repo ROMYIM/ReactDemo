@@ -3,7 +3,7 @@ using ReactDemo.Domain.Models.Party;
 
 namespace ReactDemo.Application.Services
 {
-    public interface IMemberAppService : IApplicationService<Member, MemberDto>
+    public interface IMemberAppService : IApplicationService<Member>
     {
          
     }
