@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Location;
 
 namespace ReactDemo.Domain.Models.Meeting
 {
     [Table("pb_conference")]
-    public class Conference : AggregateRoot
+    public sealed class Conference : AggregateRoot
     {
 
         [Column("start_time"), DataType(DataType.DateTime)]
@@ -26,26 +27,38 @@ namespace ReactDemo.Domain.Models.Meeting
         [Column("hall_id")]
         public int HallID { get; set; }
 
+
+        private Hall _hall;
         [ForeignKey("HallID")]
-        public virtual Hall Hall { get; set; }
+        public Hall Hall 
+        { 
+            get => this._lazyLoader.Load(this, ref this._hall);
+            private set => this._hall = value;
+        }
 
         [NotMapped]
         public ICollection<ConferenceMember> Members { get; private set; }
 
-        public Conference() {}
+        private Conference(ILazyLoader layloader) : base(layloader) {}
 
         public Conference(ConferenceDto dto, Hall hall)
+        {
+            ID = dto.ConferenceID;
+            BookHall(hall);
+            StartTime = dto.StartTime;
+            Content = dto.Content;
+            EndTime = StartTime.AddMinutes(dto.Duration);    
+        }
+
+        public void BookHall(Hall hall)
         {
             if (hall == null || hall.Address.State == AddressState.OCCUPIED)
             {
                 throw new Exception("the hall is not exist or the hall is occupied");   
             }
-            ID = dto.ConferenceID;
             HallID = hall.ID.Value;
             Hall = hall;
-            StartTime = dto.StartTime;
-            Content = dto.Content;
-            EndTime = StartTime.AddMinutes(dto.Duration);    
+            Hall.Address.ChangeState(AddressState.OCCUPIED);
         }
 
         public int AddConferencetMembers(ICollection<int> memberIds)

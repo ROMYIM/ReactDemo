@@ -10,23 +10,20 @@ namespace ReactDemo.Application.Services
     {
 
         private readonly IConferenceRepository _conferenceRepository;
-        private readonly IHallRepository _hallRepository;
         private readonly IMemberRepository _memberRepository;
 
         public ConferenceAppService(
             IConferenceRepository conferenceRepository, 
-            IHallRepository hallRepository,
             IMemberRepository memberRepository)
         {
             this._conferenceRepository = conferenceRepository;
-            this._hallRepository = hallRepository;
             this._memberRepository = memberRepository;
         }
 
         void IConferenceAppService.CreateConference(ConferenceDto dto, int? memberID)
         {
             var member = _memberRepository.FindOne(m => m.ID == memberID);
-            var hall = _hallRepository.FindOne(h => h.ID == dto.HallID);
+            var hall = _conferenceRepository.FindHallById(dto.HallID);
             var conference = member.CreateConference(dto, hall);
             _conferenceRepository.Add(conference);
             if (_conferenceRepository.SaveChanges() == 0)

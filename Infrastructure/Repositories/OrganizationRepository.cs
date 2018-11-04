@@ -12,7 +12,7 @@ namespace ReactDemo.Infrastructure.Repositories
 
         public OrganizationRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
-            this.Entities = databaseContext.Organizations;
+            this._entities = databaseContext.Organizations;
         }
 
     }

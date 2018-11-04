@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ReactDemo.Domain.Models.System
 {
     [Table("sys_user")]
-    public class User : Entity
+    public class User : AggregateRoot
     {
         [Column("username")]
         public string Username { get; set; }

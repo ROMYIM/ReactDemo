@@ -9,11 +9,11 @@ using ReactDemo.Domain.Repositories;
 
 namespace ReactDemo.Infrastructure.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : AggregateRoot
     {
 
         protected readonly DatabaseContext _databaseContext;
-        public DbSet<TEntity> Entities { get; protected set; }
+        protected DbSet<TEntity> _entities;
 
         public Repository(DatabaseContext databaseContext)
         {
@@ -22,27 +22,27 @@ namespace ReactDemo.Infrastructure.Repositories
 
         void IRepository<TEntity>.Add(TEntity entity)
         {
-            Entities.Add(entity);
+            _entities.Add(entity);
         }
 
         void IRepository<TEntity>.Delete(TEntity entity)
         {
-            Entities.Remove(entity);
+            _entities.Remove(entity);
         }
 
         IList<TEntity> IRepository<TEntity>.FindList(Expression<Func<TEntity, bool>> predicate)
         {
-            return Entities.Where(predicate).ToList();
+            return _entities.Where(predicate).ToList();
         }
 
         TEntity IRepository<TEntity>.FindOne(Expression<Func<TEntity, bool>> predicate)
         {
-            return Entities.Single(predicate);
+            return _entities.Single(predicate);
         }
 
         void IRepository<TEntity>.Update(TEntity entity)
         {
-            Entities.Update(entity);
+            _entities.Update(entity);
         }
 
         int IRepository<TEntity>.SaveChanges()
@@ -54,11 +54,11 @@ namespace ReactDemo.Infrastructure.Repositories
         {
             if (page != null)
             {
-                return Entities.Where(predicate).OrderByDescending(e => e.CreateTime).Skip(page.Index).Take(page.Count).ToList();
+                return _entities.Where(predicate).OrderByDescending(e => e.CreateTime).Skip(page.Index).Take(page.Count).ToList();
             }
             else
             {
-                return Entities.Where(predicate).OrderByDescending(e => e.CreateTime).ToList();
+                return _entities.Where(predicate).OrderByDescending(e => e.CreateTime).ToList();
             }
         }
     }

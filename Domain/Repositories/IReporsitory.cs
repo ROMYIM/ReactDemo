@@ -6,7 +6,7 @@ using ReactDemo.Domain.Models;
 
 namespace ReactDemo.Domain.Repositories
 {
-    public interface IRepository<TEntity> where TEntity : Entity
+    public interface IRepository<TEntity> where TEntity : AggregateRoot
     {
         void Add(TEntity entity);
 

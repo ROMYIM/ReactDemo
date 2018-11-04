@@ -1,19 +1,42 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ReactDemo.Domain.Models
 {
-    public class Entity
+    public class Entity : IEntity
     {
+
+        protected int? _id;
         [Key, Column("id")]
-        public int? ID { get; set; }
+        public int? ID
+        {
+            get 
+            { 
+                if (_id == null)
+                {
+                    throw new NullReferenceException("id can not bu null");
+                }
+                return _id;
+            }
+            protected set => _id = value;
+        }
+
+        protected readonly ILazyLoader _lazyLoader;
+        
 
         [Column("create_time"), DataType(DataType.DateTime)]
-        public DateTime CreateTime { get; set; }
+        public DateTime CreateTime { get; protected set; }
 
-        public Entity()
+        protected Entity()
         {
+            CreateTime = DateTime.Now;
+        }
+
+        protected Entity(ILazyLoader lazyLoader)
+        {
+            this._lazyLoader = lazyLoader;
             CreateTime = DateTime.Now;
         }
 
@@ -50,7 +73,7 @@ namespace ReactDemo.Domain.Models
             // TODO: write your implementation of GetHashCode() here
             if (this.ID != null)
             {
-                return (int)this.ID;
+                return this.ID.GetHashCode();
             }
             return base.GetHashCode();
         }

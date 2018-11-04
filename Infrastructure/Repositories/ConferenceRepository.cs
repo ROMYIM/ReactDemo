@@ -12,7 +12,12 @@ namespace ReactDemo.Infrastructure.Repositories
     {
         public ConferenceRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
-            this.Entities = databaseContext.Conferences;
+            this._entities = databaseContext.Conferences;
+        }
+
+        Hall IConferenceRepository.FindHallById(int hallID)
+        {
+            return _databaseContext.Halls.Find(hallID);
         }
     }
 }

@@ -11,6 +11,7 @@ namespace ReactDemo.Domain.Models.Meeting
         [Column("name")]
         public string Name { get; set; }
 
-        public virtual Address Address { get; set; }
+        public Address Address { get; set; }
+
     }
 }

@@ -1,32 +1,48 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Meeting;
 
 namespace ReactDemo.Domain.Models.Party
 {
     [Table("pb_party_member")]
-    public class Member : Entity
+    public sealed class Member : AggregateRoot
     {
+
+
         [Column("organization_id")]
-        public int OrganizationID { get; set; }
+        public int OrganizationID { get; private set; }
+
+        private Organization _organization;
 
         [ForeignKey("OrganizationID")]
-        public virtual Organization Organization { get; set; }
+        public Organization Organization 
+        { 
+            get => this._lazyLoader.Load(this, ref _organization);
+            private set
+            {
+                if (value == null)
+                {
+                    throw new NullReferenceException("organization can not be empty");
+                }
+                _organization = value;
+            }
+        }
 
         [Column("role")]
         public PartyRole Role { get; set; }
 
-        public virtual PersonalInformation PersonalInformation { get; set; }
+        public PersonalInformation PersonalInformation { get; private set; }
 
         [Column("position")]
-        public  string Position { get; set; }
+        public  string Position { get; private set; }
 
         [Column("join_time"), DataType(DataType.Date)]
-        public  DateTime JoinTime { get; set; }
+        public  DateTime JoinTime { get; private set; }
 
-        public Member() {}
+        private Member(ILazyLoader lazyLoader) : base(lazyLoader) {}
 
         public Member(MemberDto dto)
         {
@@ -50,7 +66,7 @@ namespace ReactDemo.Domain.Models.Party
         public Conference CreateConference(ConferenceDto dto, Hall hall)
         {
             var conference = new Conference(dto, hall);
-            conference.OrganizerID = ID.Value;
+            conference.OrganizerID = OrganizationID;
             return conference;
         }
 

@@ -7,22 +7,41 @@ using ReactDemo.Domain.Models.System;
 namespace ReactDemo.Domain.Models.Party
 {
     [Table("pb_party_organization")]
-    public class Organization : Entity
+    public class Organization : AggregateRoot
     {
         [Column("organization_name")]
-        public string Name { get; set; }
+        private string _name;
+        public string Name 
+        { 
+            get 
+            {
+                if (string.IsNullOrWhiteSpace(this._name))
+                {
+                    throw new NullReferenceException("the organization name is null");
+                }
+                return this._name;
+            }
+            private set
+            { 
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new NullReferenceException("the organization name can not be empty");
+                }
+                this._name = value;
+            }
+        }
 
-        public virtual Contact Contact { get; set; }
+        public virtual Contact Contact { get; private set; }
 
         [Column("user_id")]
-        public int? UserID { get; set; }
+        public int? UserID { get; private set; }
 
         [ForeignKey("UserID")]
-        public virtual User User { get; set; }
+        public virtual User User { get; private set; }
 
-        public virtual ICollection<Member> Members { get; set; }
+        public virtual ICollection<Member> Members { get; private set; }
 
-        public Organization() {}
+        private Organization() {}
 
         public Organization(OrganizationDto dto)
         {
@@ -36,7 +55,7 @@ namespace ReactDemo.Domain.Models.Party
             };
         }
 
-        public Member AddMember(MemberDto dto)
+        public void AddMember(MemberDto dto)
         {
             if (dto.OrganizationID != this.ID)
             {
@@ -48,7 +67,6 @@ namespace ReactDemo.Domain.Models.Party
                 throw new Exception();
             }
             Members.Add(member);
-            return member;
         }
 
     }
