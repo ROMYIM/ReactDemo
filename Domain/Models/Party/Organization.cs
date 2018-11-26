@@ -31,7 +31,23 @@ namespace ReactDemo.Domain.Models.Party
             }
         }
 
-        public virtual Contact Contact { get; private set; }
+
+        private int? _superOrganizaionID;
+        [Column("super_organization_id")]
+        public int? SuperOrganizationID 
+        { 
+            get => _superOrganizaionID;
+            private set
+            {
+                if (value == null)
+                {
+                    throw new NullReferenceException("the super organization is null");
+                }
+                _superOrganizaionID = value;
+            } 
+        }
+
+        public Contact Contact { get; private set; }
 
         [Column("user_id")]
         public int? UserID { get; private set; }
@@ -55,6 +71,19 @@ namespace ReactDemo.Domain.Models.Party
             };
         }
 
+        private Organization(OrganizationDto dto, int? superOrganizationID)
+        {
+            ID = dto.OrganizationID;
+            Name = dto.OrganizationName;
+            Contact = new Contact
+            {
+                Phone = dto.Phone,
+                QQ = dto.QQ,
+                Email = dto.Email
+            };
+            SuperOrganizationID = superOrganizationID;
+        }
+
         public void AddMember(MemberDto dto)
         {
             if (dto.OrganizationID != this.ID)
@@ -67,6 +96,19 @@ namespace ReactDemo.Domain.Models.Party
                 throw new Exception();
             }
             Members.Add(member);
+        }
+
+        public Organization CreateOrganization(OrganizationDto dto)
+        {
+            return new Organization(dto, ID);
+        }
+
+        public void Edit(OrganizationDto dto)
+        {
+            Name = dto.OrganizationName;
+            Contact.Email = dto.Email;
+            Contact.Phone = dto.Phone;
+            Contact.QQ = dto.QQ;
         }
 
     }

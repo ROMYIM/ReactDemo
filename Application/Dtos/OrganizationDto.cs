@@ -10,6 +10,8 @@ namespace ReactDemo.Application.Dtos
         [Required]
         public string OrganizationName { get; set; }
 
+        public int? SuperOrganizationID { get; set; }
+
         [Required, Phone]
         public string Phone { get; set; }
 

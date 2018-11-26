@@ -16,9 +16,9 @@ namespace ReactDemo.Domain.Repositories
 
         TEntity FindOne(Expression<Func<TEntity, bool>> predicate);
 
-        IList<TEntity> FindList(Expression<Func<TEntity, bool>> predicate);
+        List<TEntity> FindList(Expression<Func<TEntity, bool>> predicate);
 
-        IList<TEntity> FindList(Expression<Func<TEntity, bool>> predicate, Page page); 
+        List<TEntity> FindList(Expression<Func<TEntity, bool>> predicate, Page page); 
 
         int SaveChanges();
     }

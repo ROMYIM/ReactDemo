@@ -20,9 +20,9 @@ namespace ReactDemo.Application.Services
             this._memberRepository = memberRepository;
         }
 
-        void IConferenceAppService.CreateConference(ConferenceDto dto, int? memberID)
+        void IConferenceAppService.CreateConference(ConferenceDto dto)
         {
-            var member = _memberRepository.FindOne(m => m.ID == memberID);
+            var member = _memberRepository.FindMember();
             var hall = _conferenceRepository.FindHallById(dto.HallID);
             var conference = member.CreateConference(dto, hall);
             _conferenceRepository.Add(conference);

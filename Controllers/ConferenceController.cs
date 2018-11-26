@@ -38,10 +38,9 @@ namespace ReactDemo.Controllers
         [HttpPost("[action]")]
         public ActionResult CreateConference([FromForm]ConferenceDto dto)
         {
-            var memberID = TempData["memberId"] as int?;
-            if (ModelState.IsValid && memberID != null)
+            if (ModelState.IsValid)
             {
-                _conferenceAppService.CreateConference(dto, memberID);
+                _conferenceAppService.CreateConference(dto);
                 _logger.LogDebug("add conference sucessfully");
                 return Ok();
             }

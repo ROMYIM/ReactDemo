@@ -5,13 +5,13 @@ using ReactDemo.Domain.Repositories;
 
 namespace ReactDemo.Application.Services
 {
-    public class MemberService : IMemberAppService
+    public class MemberAppService : IMemberAppService
     {
 
         private readonly IMemberRepository _memberRepository;
         private readonly IOrganizationRepository _organizationRepository;
 
-        public MemberService(IMemberRepository memberRepository, IOrganizationRepository organizationRepository)
+        public MemberAppService(IMemberRepository memberRepository, IOrganizationRepository organizationRepository)
         {
             this._memberRepository = memberRepository;
             this._organizationRepository = organizationRepository;
@@ -19,7 +19,8 @@ namespace ReactDemo.Application.Services
 
         IList<Member> IApplicationService<Member>.GetListByPage(Page page)
         {
-            return _memberRepository.FindList(m => true, page);
+            var member = _memberRepository.FindMember();
+            return _memberRepository.FindList(m => m.OrganizationID == member.OrganizationID, page);
         }
     }
 }
