@@ -23,8 +23,10 @@ namespace ReactDemo.Application.Services
         public IList<Organization> GetListByPage(Page page)
         {
             var member = _memberRepository.FindMember();
-
-            return _organizationRepository.FindList(o => true, page);
+            int? superOrganizationID = member.OrganizationID;
+            List<Organization> organizations = null;
+            FindAllChildrenOrganization(out organizations, superOrganizationID);
+            return organizations;
         }
 
         void IOrganizationAppService.CreateOrganization(OrganizationDto dto)
