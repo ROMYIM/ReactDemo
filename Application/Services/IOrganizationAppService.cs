@@ -8,5 +8,7 @@ namespace ReactDemo.Application.Services
         void CreateOrganization(OrganizationDto dto);
 
         void EditOrganization(OrganizationDto dto);
+
+        void AddPartyMember(MemberDto dto);
     }
 }

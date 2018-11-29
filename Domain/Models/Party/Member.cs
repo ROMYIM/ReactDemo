@@ -11,9 +11,27 @@ namespace ReactDemo.Domain.Models.Party
     public sealed class Member : AggregateRoot
     {
 
-
+        private int _organizationID;
         [Column("organization_id")]
-        public int OrganizationID { get; private set; }
+        public int OrganizationID 
+        { 
+            get
+            {
+                if (_organizationID == 0)
+                {
+                    throw new Exception("organizationID can not be 0");
+                }
+                return _organizationID;
+            }
+            private set
+            {
+                if (value == 0)
+                {
+                    throw new Exception("organizationID can not be 0");
+                }
+                _organizationID = value;
+            }
+        }
 
         private Organization _organization;
 
@@ -21,13 +39,14 @@ namespace ReactDemo.Domain.Models.Party
         public Organization Organization 
         { 
             get => this._lazyLoader.Load(this, ref _organization);
-            private set
+            set
             {
                 if (value == null)
                 {
                     throw new NullReferenceException("organization can not be empty");
                 }
                 _organization = value;
+                OrganizationID = _organization.ID.Value;
             }
         }
 
@@ -36,8 +55,6 @@ namespace ReactDemo.Domain.Models.Party
 
         public PersonalInformation PersonalInformation { get; private set; }
 
-        [Column("position")]
-        public  string Position { get; private set; }
 
         [Column("join_time"), DataType(DataType.Date)]
         public  DateTime JoinTime { get; private set; }
@@ -50,7 +67,6 @@ namespace ReactDemo.Domain.Models.Party
             this.OrganizationID = dto.OrganizationID;
             this.Role = dto.Role;
             this.JoinTime = dto.JoinTime;
-            this.Position = dto.Position;
             this.PersonalInformation = new PersonalInformation
             {
                 Name = dto.Name,

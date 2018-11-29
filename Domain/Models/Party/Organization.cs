@@ -86,11 +86,8 @@ namespace ReactDemo.Domain.Models.Party
 
         public void AddMember(MemberDto dto)
         {
-            if (dto.OrganizationID != this.ID)
-            {
-                throw new Exception();
-            }
             var member = new Member(dto);
+            member.Organization = this;
             if (Members.Contains(member))
             {
                 throw new Exception();

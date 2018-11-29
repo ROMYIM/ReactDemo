@@ -69,5 +69,11 @@ namespace ReactDemo.Application.Services
                 }
             }
         }
+
+        void IOrganizationAppService.AddPartyMember(MemberDto dto)
+        {
+            var organization = _organizationRepository.FindOne(o => o.ID == dto.OrganizationID);
+            organization.AddMember(dto);
+        }
     }
 }
