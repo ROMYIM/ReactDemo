@@ -24,6 +24,7 @@ namespace ReactDemo.Domain.Models
         }
 
         protected readonly ILazyLoader _lazyLoader;
+        public ILazyLoader LazyLoader { get => _lazyLoader; }
         
 
         [Column("create_time"), DataType(DataType.DateTime)]
