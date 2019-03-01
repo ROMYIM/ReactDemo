@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Party;
@@ -73,7 +74,9 @@ namespace ReactDemo.Application.Services
         void IOrganizationAppService.AddPartyMember(MemberDto dto)
         {
             var organization = _organizationRepository.FindOne(o => o.ID == dto.OrganizationID);
-            organization.AddMember(dto);
+            var role = organization.Roles.Single(r => r.ID == dto.RoleID);
+            var member = new Member(dto, role);
+            organization.AddMember(member);
         }
     }
 }

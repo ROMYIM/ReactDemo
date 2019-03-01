@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.System;
 
@@ -31,7 +32,6 @@ namespace ReactDemo.Domain.Models.Party
             }
         }
 
-
         private int? _superOrganizaionID;
         [Column("super_organization_id")]
         public int? SuperOrganizationID 
@@ -47,6 +47,14 @@ namespace ReactDemo.Domain.Models.Party
             } 
         }
 
+        private List<Role> _roles;
+        public List<Role> Roles
+        {
+            get => this._lazyLoader.Load(this, ref _roles);
+            private set => _roles = value;
+        }
+
+
         public Contact Contact { get; private set; }
 
         [Column("user_id")]
@@ -55,7 +63,7 @@ namespace ReactDemo.Domain.Models.Party
         [ForeignKey("UserID")]
         public virtual User User { get; private set; }
 
-        public virtual ICollection<Member> Members { get; private set; }
+        public virtual List<Member> Members { get; private set; }
 
         private Organization() {}
 
@@ -84,9 +92,8 @@ namespace ReactDemo.Domain.Models.Party
             SuperOrganizationID = superOrganizationID;
         }
 
-        public void AddMember(MemberDto dto)
+        public void AddMember(Member member)
         {
-            var member = new Member(dto);
             member.Organization = this;
             if (Members.Contains(member))
             {

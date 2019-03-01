@@ -27,7 +27,7 @@ namespace ReactDemo.Domain.Models.Party
             {
                 if (value == 0)
                 {
-                    throw new Exception("organizationID can not be 0");
+                    throw new ArgumentException("organizationID can not be 0");
                 }
                 _organizationID = value;
             }
@@ -51,7 +51,7 @@ namespace ReactDemo.Domain.Models.Party
         }
 
         [Column("role")]
-        public PartyRole Role { get; set; }
+        public Role Role { get; set; }
 
         public PersonalInformation PersonalInformation { get; private set; }
 
@@ -61,11 +61,11 @@ namespace ReactDemo.Domain.Models.Party
 
         private Member(ILazyLoader lazyLoader) : base(lazyLoader) {}
 
-        public Member(MemberDto dto)
+        public Member(MemberDto dto, Role role)
         {
             this.ID = dto.MemberID;
             this.OrganizationID = dto.OrganizationID;
-            this.Role = dto.Role;
+            this.Role = role;
             this.JoinTime = dto.JoinTime;
             this.PersonalInformation = new PersonalInformation
             {

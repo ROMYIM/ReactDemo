@@ -12,7 +12,7 @@ namespace ReactDemo.Application.Dtos
         public int OrganizationID { get; set; }
 
         [Required]
-        public PartyRole Role { get; set; }
+        public int RoleID { get; set; }
 
         public string Position { get; set; }
 

@@ -39,7 +39,7 @@ namespace ReactDemo.Domain.Models.Meeting
         [NotMapped]
         public ICollection<ConferenceMember> Members { get; private set; }
 
-        private Conference(ILazyLoader layloader) : base(layloader) {}
+        // private Conference(ILazyLoader layloader) : base(layloader) {}
 
         public Conference(ConferenceDto dto, Hall hall)
         {

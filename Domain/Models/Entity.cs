@@ -23,9 +23,7 @@ namespace ReactDemo.Domain.Models
             protected set => _id = value;
         }
 
-        protected readonly ILazyLoader _lazyLoader;
-        public ILazyLoader LazyLoader { get => _lazyLoader; }
-        
+        protected readonly ILazyLoader _lazyLoader;    
 
         [Column("create_time"), DataType(DataType.DateTime)]
         public DateTime CreateTime { get; protected set; }

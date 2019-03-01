@@ -8,7 +8,5 @@ namespace ReactDemo.Domain.Models
         int? ID { get; }
 
         DateTime CreateTime { get; }
-
-        ILazyLoader LazyLoader { get; }
     }
 }

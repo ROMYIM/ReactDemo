@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,8 @@ namespace ReactDemo
 {
     public class Startup
     {
+
+        public const string SchemeName = "PartyAuth";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -29,7 +32,6 @@ namespace ReactDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            const string SCHEME = "PartyBuild";
 
             services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySQL(Configuration.GetConnectionString("test")));
             services.AddScoped<IMemberRepository, MemberRepository>();
@@ -43,7 +45,7 @@ namespace ReactDemo
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(10);
                 options.Cookie.HttpOnly = true;
-                options.Cookie.Name = SCHEME;
+                options.Cookie.Name = "PartyBuildCookie";
             });
             services.AddDistributedMemoryCache();
             // In production, the React files will be served from this directory
@@ -83,7 +85,11 @@ namespace ReactDemo
                 options.User.RequireUniqueEmail = false;
             });
 
-            services.AddAuthentication(SCHEME).AddCookie(options =>
+            services.AddAuthentication(options => 
+            {
+                options.DefaultAuthenticateScheme = SchemeName;
+            })
+            .AddCookie(options =>
             {
                 // Cookie settings
                 options.Cookie.HttpOnly = true;

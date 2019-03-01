@@ -18,6 +18,9 @@ namespace ReactDemo.Domain.Models.System
 
         [Column("image_url")]
         public string ImageUrl { get; set; }
+
+        [Column("member_id")]
+        public int? MemberID { get; private set; }
         
     }
 }

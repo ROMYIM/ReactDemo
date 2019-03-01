@@ -8,9 +8,6 @@ namespace ReactDemo.Domain.Models
         {
         }
 
-        protected AggregateRoot()
-        {
-            
-        }
+        protected AggregateRoot() {}
     }
 }

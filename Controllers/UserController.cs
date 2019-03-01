@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ReactDemo.Application.Dtos;
+using ReactDemo.Application.Services;
 using ReactDemo.Infrastructure.Utils;
 
 namespace ReactDemo.Controllers
@@ -16,11 +17,13 @@ namespace ReactDemo.Controllers
     {
         private readonly ImageUtil _imageUtil;
         private readonly ILogger<UserController> _logger;
+        private readonly IUserAppService _userAppService;
 
-        public UserController(ImageUtil imageUtil, ILoggerFactory loggerFactory)
+        public UserController(ImageUtil imageUtil, ILoggerFactory loggerFactory, IUserAppService userAppService)
         {
             _imageUtil = imageUtil;
             _logger = loggerFactory.CreateLogger<UserController>();
+            _userAppService = userAppService;
         }
 
         [HttpGet("verifycode")]
@@ -43,12 +46,27 @@ namespace ReactDemo.Controllers
             return File(memoryStream.ToArray(), @"image/png");
         }
 
-        public Task<IActionResult> Login([FromBody, Bind("username, password, verifycode")]UserDto userDto)
+        [HttpPost("[action]")]
+        public async Task<ActionResult<string>> Login([FromBody, Bind("username, password, verifycode")]UserDto userDto)
         {
+            string resultString = null;
             if (ModelState.IsValid)
             {
                 string verifyCode = HttpContext.Session.GetString("verifyCode").ToLower();
-
+                if (userDto.ValidateVerifyCode(verifyCode))
+                {
+                    var result = await _userAppService.UserSignInAsync(userDto);
+                    if (result)
+                        resultString = "登录成功";
+                    else
+                        resultString = "登录失败";
+                }
+                resultString = "验证码有误";
+                return resultString;
+            }
+            else
+            {
+                return BadRequest(ModelState);
             }
         }
     }
