@@ -2,6 +2,8 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Internal;
+using ReactDemo.Domain.Models.Party;
 
 namespace ReactDemo.Domain.Models.System
 {
@@ -21,6 +23,16 @@ namespace ReactDemo.Domain.Models.System
 
         [Column("member_id")]
         public int? MemberID { get; private set; }
+        
+        [ForeignKey("MemberID")]
+        private Member _member;
+        public Member Member
+        {
+            get { return _lazyLoader.Load(this, ref _member); }
+            private set { _member = value;}
+        }
+
+        private User(ILazyLoader lazyLoader) : base(lazyLoader) {}
         
     }
 }

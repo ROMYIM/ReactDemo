@@ -41,6 +41,8 @@ namespace ReactDemo.Domain.Models.Meeting
 
         // private Conference(ILazyLoader layloader) : base(layloader) {}
 
+        private Conference(ILazyLoader lazyLoader) : base(lazyLoader) {}
+
         public Conference(ConferenceDto dto, Hall hall)
         {
             ID = dto.ConferenceID;

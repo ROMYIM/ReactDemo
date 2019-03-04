@@ -20,5 +20,10 @@ namespace ReactDemo.Infrastructure.Repositories
         {
             
         }
+
+        protected override void OnModelCreating  (ModelBuilder builder)
+        {
+            builder.Entity<User>().HasIndex(u => u.Username).HasName("username").IsUnique();
+        }
     }
 }

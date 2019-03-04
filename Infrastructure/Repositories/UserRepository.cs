@@ -8,6 +8,7 @@ namespace ReactDemo.Infrastructure.Repositories
     {
         public UserRepository(DatabaseContext databaseContext, IHttpContextAccessor httpContextAccessor) : base(databaseContext, httpContextAccessor)
         {
+            _entities = _databaseContext.Users;
         }
     }
 }

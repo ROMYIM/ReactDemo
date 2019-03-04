@@ -47,22 +47,22 @@ namespace ReactDemo.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<string>> Login([FromBody, Bind("username, password, verifycode")]UserDto userDto)
+        public async Task<IActionResult> Login([FromForm]UserDto userDto)
         {
-            string resultString = null;
+            var cookieValue = HttpContext.Request.Cookies["PartyBuildCookie"];
+            _logger.LogDebug($"cookie value:----------  {cookieValue}");
             if (ModelState.IsValid)
             {
-                string verifyCode = HttpContext.Session.GetString("verifyCode").ToLower();
-                if (userDto.ValidateVerifyCode(verifyCode))
+                string verifyCode = HttpContext.Session.GetString("verifyCode");
+                if (verifyCode != null && userDto.ValidateVerifyCode(verifyCode.ToLower()))
                 {
                     var result = await _userAppService.UserSignInAsync(userDto);
                     if (result)
-                        resultString = "登录成功";
+                        return Ok("登录成功");
                     else
-                        resultString = "登录失败";
+                        return BadRequest("登录失败");
                 }
-                resultString = "验证码有误";
-                return resultString;
+                return BadRequest("验证码有误");
             }
             else
             {
