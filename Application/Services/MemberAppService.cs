@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Party;
 using ReactDemo.Domain.Repositories;
@@ -17,10 +18,10 @@ namespace ReactDemo.Application.Services
             this._organizationRepository = organizationRepository;
         }
 
-        IList<Member> IApplicationService<Member>.GetListByPage(Page page)
+        async Task<List<Member>> IApplicationService<Member>.GetListByPageAsync(Page page)
         {
             var member = _memberRepository.FindMember();
-            return _memberRepository.FindList(m => m.OrganizationID == member.OrganizationID, page);
+            return await _memberRepository.FindListAsync(m => m.OrganizationID == member.OrganizationID, page);
         }
     }
 }

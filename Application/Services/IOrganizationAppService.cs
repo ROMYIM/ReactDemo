@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Party;
 
@@ -9,6 +10,6 @@ namespace ReactDemo.Application.Services
 
         void EditOrganization(OrganizationDto dto);
 
-        void AddPartyMember(MemberDto dto);
+        Task AddPartyMemberAsync(MemberDto dto);
     }
 }

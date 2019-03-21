@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ReactDemo.Application.Dtos;
@@ -14,8 +15,10 @@ namespace ReactDemo.Infrastructure.Repositories
     {
 
         protected readonly DatabaseContext _databaseContext;
+
         protected DbSet<TEntity> _entities;
-        protected HttpContext _httpContext;
+
+        protected readonly HttpContext _httpContext;
 
         public Repository(DatabaseContext databaseContext, IHttpContextAccessor httpContextAccessor)
         {
@@ -23,24 +26,25 @@ namespace ReactDemo.Infrastructure.Repositories
             _httpContext = httpContextAccessor.HttpContext;
         }
 
-        void IRepository<TEntity>.Add(TEntity entity)
+        async Task IRepository<TEntity>.AddAsync(TEntity entity)
         {
-            _entities.Add(entity);
+            await _entities.AddAsync(entity);
         }
 
-        void IRepository<TEntity>.Delete(TEntity entity)
+        async Task IRepository<TEntity>.DeleteAsync(TEntity entity)
         {
             _entities.Remove(entity);
+            await _databaseContext.SaveChangesAsync();
         }
 
-        List<TEntity> IRepository<TEntity>.FindList(Expression<Func<TEntity, bool>> predicate)
+        async Task<List<TEntity>> IRepository<TEntity>.FindListAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return _entities.Where(predicate).ToList();
+            return await  _entities.Where(predicate).ToListAsync();
         }
 
-        TEntity IRepository<TEntity>.FindOne(Expression<Func<TEntity, bool>> predicate)
+        async Task<TEntity> IRepository<TEntity>.FindOneAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return _entities.Single(predicate);
+            return await _entities.SingleAsync(predicate);
         }
 
         void IRepository<TEntity>.Update(TEntity entity)
@@ -53,16 +57,32 @@ namespace ReactDemo.Infrastructure.Repositories
             return _databaseContext.SaveChanges();
         }
 
-        List<TEntity> IRepository<TEntity>.FindList(Expression<Func<TEntity, bool>> predicate, Page page)
+        async Task<List<TEntity>> IRepository<TEntity>.FindListAsync(Expression<Func<TEntity, bool>> predicate, Page page)
         {
             if (page != null)
             {
-                return _entities.Where(predicate).OrderByDescending(e => e.CreateTime).Skip(page.Index).Take(page.Count).ToList();
+                return await _entities.Where(predicate).OrderByDescending(e => e.CreateTime).Skip(page.Index).Take(page.Count).ToListAsync();
             }
             else
             {
-                return _entities.Where(predicate).OrderByDescending(e => e.CreateTime).ToList();
+                return await _entities.Where(predicate).OrderByDescending(e => e.CreateTime).ToListAsync();
             }
+        }
+
+        void IRepository<TEntity>.Add(TEntity entity)
+        {
+            _entities.Add(entity);
+        }
+
+        void IRepository<TEntity>.Delete(TEntity entity)
+        {
+            _entities.Remove(entity);
+        }
+
+        async Task IRepository<TEntity>.UpdateAsync(TEntity entity)
+        {
+            _entities.Update(entity);
+            await _databaseContext.SaveChangesAsync();
         }
     }
 }

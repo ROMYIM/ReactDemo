@@ -21,16 +21,16 @@ namespace ReactDemo.Domain.Models.System
         [Column("image_url")]
         public string ImageUrl { get; set; }
 
-        [Column("member_id")]
-        public int? MemberID { get; private set; }
+        // [Column("member_id")]
+        // public int? MemberID { get; private set; }
         
-        [ForeignKey("MemberID")]
-        private Member _member;
-        public Member Member
-        {
-            get { return _lazyLoader.Load(this, ref _member); }
-            private set { _member = value;}
-        }
+        // private Member _member;
+        // [ForeignKey("MemberID")]
+        // public Member Member
+        // {
+        //     get { return _lazyLoader.Load(this, ref _member); }
+        //     private set { _member = value;}
+        // }
 
         private User(ILazyLoader lazyLoader) : base(lazyLoader) {}
         

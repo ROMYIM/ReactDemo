@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Meeting;
 using ReactDemo.Domain.Repositories;
@@ -33,9 +34,9 @@ namespace ReactDemo.Application.Services
             //  加入推送事件
         }
 
-        public IList<Conference> GetListByPage(Page page)
+        public async Task<List<Conference>> GetListByPageAsync(Page page)
         {
-            return _conferenceRepository.FindList((c => 1 == 1), page);
+            return await _conferenceRepository.FindListAsync((c => 1 == 1), page);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.Party;
 using ReactDemo.Domain.Repositories;
+using System.Threading.Tasks;
 
 namespace ReactDemo.Application.Services
 {
@@ -44,36 +45,35 @@ namespace ReactDemo.Application.Services
             _organizationRepository.Update(organization);
         }
 
-        IList<Organization> IApplicationService<Organization>.GetListByPage(Page page)
+        async Task<List<Organization>> IApplicationService<Organization>.GetListByPageAsync(Page page)
         {
             var member = _memberRepository.FindMember();
             int? superOrganizationID = member.OrganizationID;
-            List<Organization> organizations = null;
-            FindAllChildrenOrganization(out organizations, superOrganizationID);
-            return organizations;
+            return await FindAllChildrenOrganizationAsync(superOrganizationID);
         }
 
-        private void FindAllChildrenOrganization(out List<Organization> organizations, int? superOrganizationID)
+        private async Task<List<Organization>> FindAllChildrenOrganizationAsync(int? superOrganizationID)
         {
-            organizations = new List<Organization>();
-            List<Organization> organizationList = _organizationRepository.FindList(o => o.SuperOrganizationID == superOrganizationID);
+            List<Organization>  organizations = new List<Organization>();
+            List<Organization> organizationList = await _organizationRepository.FindListAsync(o => o.SuperOrganizationID == superOrganizationID);
             Queue<Organization> organizationQueue = new Queue<Organization>(organizationList);
             while (organizationQueue.Count > 0)
             {
                 organizations.AddRange(organizationList);
                 var organization = organizationQueue.Dequeue();
                 superOrganizationID = organization.SuperOrganizationID;
-                organizationList = _organizationRepository.FindList(o => o.SuperOrganizationID == superOrganizationID);
+                organizationList = await _organizationRepository.FindListAsync(o => o.SuperOrganizationID == superOrganizationID);
                 if (organizationList != null && organizationList.Count > 0)
                 {
                     organizationList.ForEach(item => organizationQueue.Enqueue(item));
                 }
             }
+            return organizations;
         }
 
-        void IOrganizationAppService.AddPartyMember(MemberDto dto)
+        async Task IOrganizationAppService.AddPartyMemberAsync(MemberDto dto)
         {
-            var organization = _organizationRepository.FindOne(o => o.ID == dto.OrganizationID);
+            var organization = await _organizationRepository.FindOneAsync(o => o.ID == dto.OrganizationID);
             var role = organization.Roles.Single(r => r.ID == dto.RoleID);
             var member = new Member(dto, role);
             organization.AddMember(member);
