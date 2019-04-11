@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,6 +18,7 @@ using ReactDemo.Application.Services;
 using ReactDemo.Domain.Models.System;
 using ReactDemo.Domain.Repositories;
 using ReactDemo.Infrastructure.Repositories;
+using ReactDemo.Infrastructure.Security.Authentication;
 using ReactDemo.Infrastructure.Utils;
 
 namespace ReactDemo
@@ -24,7 +27,11 @@ namespace ReactDemo
     {
 
         public const string SchemeName = "PartyAuth";
+
         public const string CookieName = "PartyBuildCookie";
+
+        public const string KeyName = "OpenKey";
+
         public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
@@ -40,12 +47,7 @@ namespace ReactDemo
         {
 
             services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySQL(Configuration.GetConnectionString("test")));
-            services.AddScoped<IMemberRepository, MemberRepository>();
-            services.AddScoped<IOrganizationRepository, OrganizationRepository>();
-            services.AddScoped<IConferenceRepository, ConferenceRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddTransient<IConferenceAppService, ConferenceAppService>();
-            services.AddTransient<IOrganizationAppService, OrganizationAppService>();
             services.AddTransient<IUserAppService, UserAppService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSession(options => 
@@ -69,6 +71,10 @@ namespace ReactDemo
                 options.CheckConsentNeeded = httpContext => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.AddDataProtection();
+            services.AddSingleton<IDataSerializer<AuthenticationTicket>, TicketSerializer>();
+            services.AddSingleton<ISecureDataFormat<AuthenticationTicket>, DefaultAuthenticationDataFormat>();
 
             // services.AddDefaultIdentity<User>().AddEntityFrameworkStores<DatabaseContext>();
             // services.Configure<IdentityOptions>(options =>
@@ -94,21 +100,31 @@ namespace ReactDemo
             services.AddAuthentication(options => 
             {
                 options.DefaultAuthenticateScheme = SchemeName;
+                options.DefaultSignInScheme = SchemeName;
             })
-            .AddCookie(SchemeName, options =>
+            .AddScheme<DefaultAuthenticationOptions, DefaultAuthenticationHandler>(SchemeName, options => 
             {
-                // Cookie settings
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-
-                options.LoginPath = "/user/login";
-                options.LogoutPath = "/user/logout";
-                // 访问拒绝路径
-                // options.AccessDeniedPath = "/user/verifycode";
-                options.SlidingExpiration = true;
-                options.Cookie.Name = CookieName;
-
+                options.LoginPath = new PathString("/user/login");
+                options.LogoutPath = new PathString("/user/logout");
+                options.Whitelist = new List<PathString>
+                {
+                    new PathString("/user/verifycode")
+                };
             });
+            // .AddCookie(SchemeName, options =>
+            // {
+            //     // Cookie settings
+            //     options.Cookie.HttpOnly = true;
+            //     options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+            //     options.LoginPath = "/user/login";
+            //     options.LogoutPath = "/user/logout";
+            //     // 访问拒绝路径
+            //     // options.AccessDeniedPath = "/user/verifycode";
+            //     options.SlidingExpiration = true;
+            //     options.Cookie.Name = CookieName;
+
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

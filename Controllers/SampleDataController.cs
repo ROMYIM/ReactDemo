@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Application.Services;
-using ReactDemo.Presentation.ViewObject;
 
 namespace ReactDemo.Controllers
 {

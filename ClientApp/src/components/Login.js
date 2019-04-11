@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+import { Route } from 'react-router';
 import "./Login.css"
 
 export class Login extends Component {
-    constructor(props) {
-        super(props);
+    
+    constructor(props, context) {
+        super(props, context);
         this.state = {
             username: '',
             password: '',
@@ -44,6 +46,7 @@ export class Login extends Component {
 
     userLogin (e) {
         e.preventDefault();
+        const _this = this;
         const formData = new FormData();
         formData.append('username', this.state.username);
         formData.append('password', this.state.password);
@@ -54,8 +57,15 @@ export class Login extends Component {
             credentials: "same-origin",
             // headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }).then(response => {
-            const text = response.text();
-            alert(text['<value>']);
+            console.log(_this)
+            const promise = response.text();
+            let loginResult;
+            promise.then(value => loginResult = value, reason => loginResult = reason);
+            if (loginResult === '登录成功') {
+                _this.props.children.push("/")
+            } else {
+                _this.updateVerifyCodePicture()
+            }
         }).catch(data => alert(data))
     }
 
@@ -72,4 +82,8 @@ export class Login extends Component {
             [name]: value
         })
     }
+}
+
+Login.contextType = {
+    router: Route
 }

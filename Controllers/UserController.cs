@@ -49,7 +49,7 @@ namespace ReactDemo.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Login([FromForm]UserDto userDto)
         {
-            var cookieValue = HttpContext.Request.Cookies["PartyBuildCookie"];
+            var cookieValue = HttpContext.Request.Cookies[Startup.CookieName];
             _logger.LogDebug($"cookie value:----------  {cookieValue}");
             if (ModelState.IsValid)
             {
@@ -62,7 +62,16 @@ namespace ReactDemo.Controllers
                     else
                         return BadRequest("登录失败");
                 }
-                return BadRequest("验证码有误");
+                else
+                {
+                    var User = HttpContext.User;
+                    if (!User.Identity.IsAuthenticated)
+                    {
+                        _logger.LogDebug("验证不通过");
+                    }
+
+                    return BadRequest("验证码有误");
+                }
             }
             else
             {
