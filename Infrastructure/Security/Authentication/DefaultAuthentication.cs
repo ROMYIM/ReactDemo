@@ -48,6 +48,10 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 身份验证处理主体
+        /// </summary>
+        /// <returns>身份验证结果 <see cref="AuthenticateResult"/></returns>
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             var currentPath = Request.Path;
