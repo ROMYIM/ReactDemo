@@ -12,13 +12,13 @@ namespace ReactDemo.Domain.Models.System
         [Column("name")]
         public string Name
         {
-            get => _name ?? throw new NullReferenceException("the name of role is empty");
+            get => _name ?? throw new NullReferenceException(nameof(_name));
 
             set 
             { 
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentException("the name of party role can not be empty");
+                    throw new ArgumentException(nameof(value));
                 }
                 _name = value;
             }

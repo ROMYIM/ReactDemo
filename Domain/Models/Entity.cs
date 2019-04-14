@@ -56,25 +56,10 @@ namespace ReactDemo.Domain.Models
             
             // TODO: write your implementation of Equals() here
             Entity entity = obj as Entity;
-            if (entity != null)
-            {
-                return entity.ID == this.ID;
-            }
-            else
-            {
-                return false;
-            }
+            return (ID ?? throw new NullReferenceException(nameof(ID))) == entity?.ID;
         }
         
         // override object.GetHashCode
-        public override int GetHashCode()
-        {
-            // TODO: write your implementation of GetHashCode() here
-            if (this.ID != null)
-            {
-                return this.ID.GetHashCode();
-            }
-            return base.GetHashCode();
-        }
+        public override int GetHashCode() => ID ?? base.GetHashCode();
     }
 }

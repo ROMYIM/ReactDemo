@@ -17,17 +17,23 @@ namespace ReactDemo.Infrastructure.Security.Authentication
     {
         public string ProtectorPurpose { get; set; }
 
-        public PathString LoginPath { get; set; }
+        public PathString LoginPath { get; set; } = "User/Login";
 
-        public PathString LogoutPath { get; set; }
+        public PathString LogoutPath { get; set; } = "User/Logout";
 
         public List<PathString> Whitelist { get; set; }
+
+        public TimeSpan ExpiredTimeSpan { get; set; } = TimeSpan.FromHours(1);
+
+        public bool SlidingExpiration { get; set; } = true;
 
     }
 
     public class DefaultAuthenticationHandler : AuthenticationHandler<DefaultAuthenticationOptions>, IAuthenticationSignInHandler, IAuthenticationSignOutHandler
     {
         private readonly ISecureDataFormat<AuthenticationTicket> _format;
+        
+        private const string TokenName = "default token";
 
         public DefaultAuthenticationHandler(IOptionsMonitor<DefaultAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, ISecureDataFormat<AuthenticationTicket> format) : base(options, logger, encoder, clock)
         {
@@ -38,12 +44,21 @@ namespace ReactDemo.Infrastructure.Security.Authentication
         {
             var token = new AuthenticationToken
             {
-                Name = Startup.KeyName,
+                Name = TokenName,
                 Value = Guid.NewGuid().ToString()
             };
+
+            properties = properties ?? new AuthenticationProperties();
+            var tokens = new List<AuthenticationToken> { token };
+            properties.StoreTokens(tokens);
+
+            properties.IssuedUtc = DateTimeOffset.UtcNow;
+            properties.ExpiresUtc = new DateTimeOffset(properties.IssuedUtc.Value.Ticks, Options.ExpiredTimeSpan);
+
+            var ticket = new AuthenticationTicket(user, properties, Scheme.Name);
         }
 
-        public Task SignOutAsync(AuthenticationProperties properties)
+        public async Task SignOutAsync(AuthenticationProperties properties)
         {
             throw new NotImplementedException();
         }
@@ -60,16 +75,15 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             }
 
             var protectedCookie = Request.Cookies[Startup.CookieName];
-            var key = Request.Cookies[Startup.KeyName];
 
             try
             {
-                var ticket = _format.Unprotect(protectedCookie, key);
+                var ticket = _format.Unprotect(protectedCookie);
+                var properties = ticket.Properties;
                 var principal = ticket.Principal;
                 var userClaim = principal.Claims.Single(c => c.Type == "username" && c.ValueType == ClaimValueTypes.String);    
                 var roleClaim = principal.Claims.Single(c => c.Type == "role" && c.ValueType == ClaimValueTypes.String);
-                await Task.CompletedTask;
-                return CreateAuthenticatedResult(userClaim, roleClaim, ticket);
+                return await CreateAuthenticatedResultAsync(userClaim, roleClaim, properties);
             }
             catch (System.Exception e)
             {
@@ -78,12 +92,18 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             }
         }
 
-        private AuthenticateResult CreateAuthenticatedResult(Claim userClaim, Claim roleClaim, AuthenticationTicket ticket)
+        private async Task<AuthenticateResult> CreateAuthenticatedResultAsync(Claim userClaim, Claim roleClaim, AuthenticationProperties properties)
         {
             var claims = new List<Claim>{ userClaim, roleClaim };
-            var identity = new ClaimsIdentity(claims, ticket.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
-            return AuthenticateResult.Success(new AuthenticationTicket(principal, ticket.Properties, ticket.AuthenticationScheme));
+            if (Options.SlidingExpiration)
+            {
+                properties.ExpiresUtc = new DateTimeOffset(DateTime.UtcNow, Options.ExpiredTimeSpan);
+            }
+            var result = AuthenticateResult.Success(new AuthenticationTicket(principal, properties, Scheme.Name));
+            await Task.CompletedTask;
+            return result;
         }
     }
 
@@ -99,11 +119,23 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             _serializer = serializer;
         }
 
+        /// <summary>
+        /// 对认证票据进行base64编码，没有做任何加密处理
+        /// </summary>
+        /// <param name="data">认证票据 <see cref="AuthenticationTicket"/></param>
+        /// <returns>编码后的字符串</returns>
         public string Protect(AuthenticationTicket data)
         {
-            return this.Protect(data, purpose: null);
+            var serializerData = _serializer.Serialize(data ?? throw new ArgumentNullException(nameof(data)));
+            return Convert.ToBase64String(serializerData);
         }
 
+        /// <summary>
+        /// 对认证票据进行加密后再进行base64编码
+        /// </summary>
+        /// <param name="data">认证票据 <see cref="AuthenticationTicket"/></param>
+        /// <param name="purpose">供加密程序(<see cref="IDataProtector"/>)用的目标字符串</param>
+        /// <returns>加密和编码后的字符串</returns>
         public string Protect(AuthenticationTicket data, string purpose)
         {
             var serializerData = _serializer.Serialize(data ?? throw new ArgumentNullException(nameof(data)));
@@ -113,7 +145,8 @@ namespace ReactDemo.Infrastructure.Security.Authentication
 
         public AuthenticationTicket Unprotect(string protectedText)
         {
-            return this.Unprotect(protectedText, purpose: null);
+            var serializerData = Convert.FromBase64String(protectedText ?? throw new ArgumentNullException(nameof(protectedText)));
+            return _serializer.Deserialize(serializerData);
         }
 
         public AuthenticationTicket Unprotect(string protectedText, string purpose)
