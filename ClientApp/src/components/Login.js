@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
+import { Home } from "./Home";
 import "./Login.css"
 
 export class Login extends Component {
@@ -11,7 +12,8 @@ export class Login extends Component {
             password: '',
             verifyCode: '',
             codeUrl: '/user/verifycode',
-            seed: new Date().getTime()
+            seed: new Date().getTime(),
+            loginFlag: false
         }
         this.updateVerifyCodePicture = this.updateVerifyCodePicture.bind(this);
         this.userLogin = this.userLogin.bind(this);
@@ -19,6 +21,10 @@ export class Login extends Component {
     }
     
     render() {
+        if (this.state.loginFlag) {
+            return <Route exact path='/' component={Home} />;
+        }
+
         return (
             <div className="container">
                 <form className="login-form" onSubmit={this.userLogin} method="post">
@@ -58,14 +64,18 @@ export class Login extends Component {
             // headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }).then(response => {
             console.log(_this)
-            const promise = response.text();
-            let loginResult;
-            promise.then(value => loginResult = value, reason => loginResult = reason);
-            if (loginResult === '登录成功') {
-                _this.props.children.push("/")
-            } else {
+            const promise = response.text();        
+            promise.then(value => {
+                if (value == '登录成功') {
+                    alert(value);
+                    _this.setState({
+                        loginFlag: true
+                    })
+                }
+            }, reason => {
+                alert(reason);
                 _this.updateVerifyCodePicture()
-            }
+            });
         }).catch(data => alert(data))
     }
 
@@ -84,6 +94,6 @@ export class Login extends Component {
     }
 }
 
-Login.contextType = {
-    router: Route
-}
+// Login.contextType = {
+//     router: Route
+// }

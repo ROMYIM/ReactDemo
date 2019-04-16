@@ -74,7 +74,7 @@ namespace ReactDemo
 
             services.AddDataProtection();
             services.AddSingleton<IDataSerializer<AuthenticationTicket>, TicketSerializer>();
-            services.AddSingleton<ISecureDataFormat<AuthenticationTicket>, DefaultAuthenticationDataFormat>();
+            // services.AddSingleton<ISecureDataFormat<AuthenticationTicket>, DefaultAuthenticationDataFormat>();
 
             // services.AddDefaultIdentity<User>().AddEntityFrameworkStores<DatabaseContext>();
             // services.Configure<IdentityOptions>(options =>
@@ -101,14 +101,16 @@ namespace ReactDemo
             {
                 options.DefaultAuthenticateScheme = SchemeName;
                 options.DefaultSignInScheme = SchemeName;
-            })
-            .AddScheme<DefaultAuthenticationOptions, DefaultAuthenticationHandler>(SchemeName, options => 
+            }).AddScheme<DefaultAuthenticationOptions, DefaultAuthenticationHandler>(SchemeName, options => 
             {
                 options.LoginPath = new PathString("/user/login");
                 options.LogoutPath = new PathString("/user/logout");
                 options.Whitelist = new List<PathString>
                 {
-                    new PathString("/user/verifycode")
+                    new PathString("/user/verifycode"),
+                    new PathString("/static/*"),
+                    new PathString("/sockjs-node/*"),
+                    new PathString("/")
                 };
             });
             // .AddCookie(SchemeName, options =>
