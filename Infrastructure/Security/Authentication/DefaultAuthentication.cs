@@ -22,7 +22,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
 
         public PathString LogoutPath { get; set; } = "/User/Logout";
 
-        public List<PathString> Whitelist { get; set; }
+        public List<string> Whitelist { get; set; }
 
         public TimeSpan ExpiredTimeSpan { get; set; } = TimeSpan.FromHours(1);
 
@@ -65,18 +65,31 @@ namespace ReactDemo.Infrastructure.Security.Authentication
 
         public async Task SignInAsync(ClaimsPrincipal user, AuthenticationProperties properties)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (properties == null)
+            {
+                properties = new AuthenticationProperties()
+                {
+                    IsPersistent = true,
+                    IssuedUtc = DateTimeOffset.UtcNow
+                };
+            }
+
             var token = new AuthenticationToken
             {
                 Name = Options.TokenName ?? DefaultTokenName,
                 Value = Guid.NewGuid().ToString()
             };
 
-            properties = properties ?? new AuthenticationProperties();
             var tokens = new List<AuthenticationToken> { token };
             properties.StoreTokens(tokens);
-
-            properties.IssuedUtc = DateTimeOffset.UtcNow;
             properties.ExpiresUtc = properties.IssuedUtc.Value.Add(Options.ExpiredTimeSpan);
+
+            Context.User = user;
 
             var ticket = new AuthenticationTicket(user, properties, Scheme.Name);
             var authCookie = _format.Protect(ticket, token.Value);
@@ -87,7 +100,15 @@ namespace ReactDemo.Infrastructure.Security.Authentication
 
         public async Task SignOutAsync(AuthenticationProperties properties)
         {
-            throw new NotImplementedException();
+            properties = properties ?? new AuthenticationProperties();
+            properties.RedirectUri = Options.LoginPath;
+
+            var cookies = Response.Cookies;
+            var tokenName = Options.TokenName ?? DefaultTokenName;
+            var cookieName = Options.CookieName ?? DefaultCookieName;
+            cookies.Delete(tokenName);
+            cookies.Delete(cookieName);
+            await Task.CompletedTask;
         }
 
         /// <summary>
@@ -100,16 +121,17 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             Logger.LogDebug($"current path: {currentPath}");
 
             var isWhitelist = Options.Whitelist?.Exists(path => Regex.IsMatch(currentPath, path)) ?? false;
-            if (isWhitelist || currentPath == Options.LoginPath || currentPath == Options.LogoutPath)
+            if (isWhitelist || currentPath == Options.LoginPath)
             {
                 return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(), new AuthenticationProperties(), Scheme.Name));
+                // return AuthenticateResult.NoResult();
             }
 
             var protectedCookie = Request.Cookies[Options.CookieName ?? DefaultCookieName];
             var token = Request.Cookies[Options.TokenName ?? DefaultTokenName];
             try
             {
-                var ticket = _format.Unprotect(protectedCookie, token);
+                var ticket = token == null ? _format.Unprotect(protectedCookie) : _format.Unprotect(protectedCookie, token);
                 var properties = ticket.Properties;
                 var principal = ticket.Principal;
                 var userClaim = principal.Claims.Single(c => c.Type == "username" && c.ValueType == ClaimValueTypes.String);    

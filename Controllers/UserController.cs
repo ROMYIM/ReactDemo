@@ -18,17 +18,20 @@ namespace ReactDemo.Controllers
         private readonly ImageUtil _imageUtil;
         private readonly ILogger<UserController> _logger;
         private readonly IUserAppService _userAppService;
+        private readonly string _id;
 
         public UserController(ImageUtil imageUtil, ILoggerFactory loggerFactory, IUserAppService userAppService)
         {
             _imageUtil = imageUtil;
             _logger = loggerFactory.CreateLogger<UserController>();
             _userAppService = userAppService;
+            _id = Guid.NewGuid().ToString();
         }
 
         [HttpGet("verifycode")]
         public IActionResult CreateVerifyCode([FromQuery(Name = "seed")]long seed)
         {
+            _logger.LogDebug($"controller id is {_id}");
             var guid = Guid.NewGuid().ToString();
             string pattern = "[A-Za-z0-9]";
             var result = Regex.Matches(guid, pattern);
@@ -54,7 +57,7 @@ namespace ReactDemo.Controllers
             if (ModelState.IsValid)
             {
                 string verifyCode = HttpContext.Session.GetString("verifyCode");
-                if (verifyCode != null && userDto.ValidateVerifyCode(verifyCode.ToLower()))
+                if (userDto.ValidateVerifyCode(verifyCode?.ToLower()))
                 {
                     var result = await _userAppService.UserSignInAsync(userDto);
                     if (result)
@@ -64,12 +67,6 @@ namespace ReactDemo.Controllers
                 }
                 else
                 {
-                    var User = HttpContext.User;
-                    if (!User.Identity.IsAuthenticated)
-                    {
-                        _logger.LogDebug("验证不通过");
-                    }
-
                     return BadRequest("验证码有误");
                 }
             }
@@ -77,6 +74,13 @@ namespace ReactDemo.Controllers
             {
                 return BadRequest(ModelState);
             }
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Logout()
+        {
+            await _userAppService.UserSignOutAsync();
+            return Ok();
         }
     }
 }

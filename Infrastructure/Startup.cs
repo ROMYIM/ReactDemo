@@ -105,12 +105,12 @@ namespace ReactDemo
             {
                 options.LoginPath = new PathString("/user/login");
                 options.LogoutPath = new PathString("/user/logout");
-                options.Whitelist = new List<PathString>
+                options.Whitelist = new List<string>
                 {
-                    new PathString("/user/verifycode"),
-                    new PathString("/static/*"),
-                    new PathString("/sockjs-node/*"),
-                    new PathString("/")
+                    "/user/verifycode",
+                    "/static/*",
+                    "/sockjs-node/*",
+                    "^/$"
                 };
             });
             // .AddCookie(SchemeName, options =>

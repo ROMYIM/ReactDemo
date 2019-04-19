@@ -6,5 +6,7 @@ namespace ReactDemo.Application.Services
     public interface IUserAppService
     {
         Task<bool> UserSignInAsync (UserDto userDto);
+
+        Task UserSignOutAsync();
     }
 }
