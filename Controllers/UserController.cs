@@ -2,12 +2,14 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Application.Services;
+using ReactDemo.Infrastructure.Security.Authorization;
 using ReactDemo.Infrastructure.Utils;
 
 namespace ReactDemo.Controllers
@@ -29,6 +31,7 @@ namespace ReactDemo.Controllers
         }
 
         [HttpGet("verifycode")]
+        [AllowAnonymous]
         public IActionResult CreateVerifyCode([FromQuery(Name = "seed")]long seed)
         {
             _logger.LogDebug($"controller id is {_id}");
@@ -50,6 +53,7 @@ namespace ReactDemo.Controllers
         }
 
         [HttpPost("[action]")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromForm]UserDto userDto)
         {
             var cookieValue = HttpContext.Request.Cookies[Startup.CookieName];
@@ -77,6 +81,7 @@ namespace ReactDemo.Controllers
         }
 
         [HttpGet("[action]")]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _userAppService.UserSignOutAsync();
