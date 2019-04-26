@@ -1,7 +1,9 @@
 using System;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ReactDemo.Infrastructure.Security.Authorization
@@ -64,5 +66,27 @@ namespace ReactDemo.Infrastructure.Security.Authorization
         Delete,
         Edit,
         Query
-    }  
+    }
+
+    public class DefaultAuthorizationHandler : AuthorizationHandler<DefaultRequirementAttribute>
+    {
+        private readonly ILogger _logger;
+
+        public DefaultAuthorizationHandler(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger(this.GetType());
+        }
+
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DefaultRequirementAttribute requirement)
+        {
+            if (!context.User.Identity.IsAuthenticated)
+            {
+                return Task.CompletedTask;
+            }
+
+            _logger.LogDebug(context.Resource.ToString());
+
+            return Task.CompletedTask;
+        }
+    }
 }

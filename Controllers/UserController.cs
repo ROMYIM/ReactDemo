@@ -18,14 +18,14 @@ namespace ReactDemo.Controllers
     public class UserController : ControllerBase
     {
         private readonly ImageUtil _imageUtil;
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger _logger;
         private readonly IUserAppService _userAppService;
         private readonly string _id;
 
         public UserController(ImageUtil imageUtil, ILoggerFactory loggerFactory, IUserAppService userAppService)
         {
             _imageUtil = imageUtil;
-            _logger = loggerFactory.CreateLogger<UserController>();
+            _logger = loggerFactory.CreateLogger(this.GetType());
             _userAppService = userAppService;
             _id = Guid.NewGuid().ToString();
         }
