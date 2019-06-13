@@ -134,8 +134,8 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                 var ticket = token == null ? _format.Unprotect(protectedCookie) : _format.Unprotect(protectedCookie, token);
                 var properties = ticket.Properties;
                 var principal = ticket.Principal;
-                var userClaim = principal.Claims.Single(c => c.Type == "username" && c.ValueType == ClaimValueTypes.String);    
-                var roleClaim = principal.Claims.Single(c => c.Type == "role" && c.ValueType == ClaimValueTypes.String);
+                var userClaim = principal.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier && c.ValueType == ClaimValueTypes.String);    
+                var roleClaim = principal.Claims.Single(c => c.Type == ClaimTypes.Role && c.ValueType == ClaimValueTypes.String);
                 return await CreateAuthenticatedResultAsync(userClaim, roleClaim, properties);
             }
             catch (System.Exception e)

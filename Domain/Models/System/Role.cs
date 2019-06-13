@@ -1,11 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Claims;
 
 namespace ReactDemo.Domain.Models.System
 {
 
     [Table("role")]
-    public class Role : Entity
+    public class Role : AggregateRoot
     {
         private string _name;
 
@@ -24,6 +26,19 @@ namespace ReactDemo.Domain.Models.System
             }
         }
 
-        public Role(string name) => Name = name;
+        public Role(string name)
+        {
+            Name = name;
+        }
+
+        public ClaimsIdentity CreateIdentity()
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Role, ID.Value.ToString(), ClaimValueTypes.Integer32),
+                new Claim(ClaimTypes.Name, Name)
+            };
+            return new ClaimsIdentity(claims);
+        }
     }
 }

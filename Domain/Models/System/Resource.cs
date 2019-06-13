@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ReactDemo.Domain.Models.System
 {
     [Table("resource")]
-    public class Resource : Entity
+    public class Resource : AggregateRoot
     {
         private string _name;
 
@@ -22,10 +22,27 @@ namespace ReactDemo.Domain.Models.System
                 _name = value;
             }
         }
+
+        private string _value;
+
+        [Column("value")]
+        public string Value
+        {
+            get { return _value ?? throw new NullReferenceException(nameof(_value));}
+            set 
+            { 
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException(nameof(value));
+                }
+                _value = value;
+            }
+        }
    
-        public Resource(string name)
+        public Resource(string name, string value)
         {
             Name = name;
+            Value = value;
         }
     }
 }

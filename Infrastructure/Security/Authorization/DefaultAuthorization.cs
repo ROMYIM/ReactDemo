@@ -86,6 +86,13 @@ namespace ReactDemo.Infrastructure.Security.Authorization
 
             _logger.LogDebug(context.Resource.ToString());
 
+            var principal = context.User;
+            var role = principal.FindFirstValue(ClaimTypes.Role);
+            if (role == "admin")
+            {
+                context.Succeed(requirement);
+            }
+
             return Task.CompletedTask;
         }
     }

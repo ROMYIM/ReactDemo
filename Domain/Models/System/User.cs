@@ -53,37 +53,43 @@ namespace ReactDemo.Domain.Models.System
         [Column("role_id")]
         public int RoleID { get; set; }
 
-        private Role _role;
-
-        [ForeignKey("RoleID")]
-        public Role Role
-        {
-            get => _lazyLoader.Load(this, ref _role);
-            set => _role = value ?? throw new ArgumentNullException(nameof(value));
-        }
+        // private Role _role;
 
         private User(ILazyLoader lazyLoader) : base(lazyLoader) {}
 
-        public ClaimsPrincipal CreateClaimsPrincipal()
+        public ClaimsIdentity CreateIdentity()
         {
             var claims = new List<Claim>
             {
-                new Claim("username", Username, ClaimValueTypes.String),
-                new Claim("role", Role.Name, ClaimValueTypes.String)
+                new Claim(ClaimTypes.NameIdentifier, ID.Value.ToString(), ClaimValueTypes.Integer32),
+                new Claim(ClaimTypes.Name, Username, ClaimValueTypes.String)
             };
 
-            var identity = new ClaimsIdentity(claims, Startup.SchemeName);
-
-            return new ClaimsPrincipal(identity);
+            return new ClaimsIdentity(claims);
         }
 
-        public AuthenticationProperties CreateAuthenticationProperties()
+        public bool verifyPassword(string passwordInput)
         {
-            var propperties = new AuthenticationProperties();
-            propperties.IsPersistent = true;
-            propperties.IssuedUtc = DateTimeOffset.UtcNow;
-            return propperties;
+            if (passwordInput == null)
+            {
+                throw new ArgumentNullException(nameof(passwordInput));
+            }
+
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                throw new NullReferenceException(nameof(Password));
+            }
+
+            return Password == passwordInput;
         }
+
+        // public AuthenticationProperties CreateAuthenticationProperties()
+        // {
+        //     var propperties = new AuthenticationProperties();
+        //     propperties.IsPersistent = true;
+        //     propperties.IssuedUtc = DateTimeOffset.UtcNow;
+        //     return propperties;
+        // }
         
     }
 }
