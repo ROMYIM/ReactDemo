@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using ReactDemo.Application.Services;
 using ReactDemo.Domain.Models.System;
 using ReactDemo.Domain.Repositories;
+using ReactDemo.Domain.Services;
 using ReactDemo.Infrastructure.Repositories;
 using ReactDemo.Infrastructure.Security.Authentication;
 using ReactDemo.Infrastructure.Utils;
@@ -48,7 +49,9 @@ namespace ReactDemo
 
             services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySQL(Configuration.GetConnectionString("test")));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddTransient<IUserAppService, UserAppService>();
+            services.AddTransient<IUserManager, UserManager>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSession(options => 
             {
