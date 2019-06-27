@@ -1,6 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -12,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ReactDemo.Infrastructure.Security.Authentication
 {
+
     public class JwtAuthenticationHandler : JwtBearerHandler, IAuthenticationSignInHandler
     {
 
@@ -45,13 +47,20 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                 Expires = properties.ExpiresUtc.Value.UtcDateTime,
                 Issuer = Options.ClaimsIssuer,
                 Audience = Options.Audience,
-                Subject = new ClaimsIdentity(user.Claims)
+                Subject = new ClaimsIdentity(user.Claims),
+                SigningCredentials = new SigningCredentials(Options.TokenValidationParameters.IssuerSigningKey, SecurityAlgorithms.HmacSha256)
             };
+
+            var token = _tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
+            var tokeText = _tokenHandler.WriteToken(token);
+
+            return Task.CompletedTask;
         }
 
         public Task SignOutAsync(AuthenticationProperties properties)
         {
-            throw new System.NotImplementedException();
+            Logger.LogDebug("jwt logout");
+            return Task.CompletedTask;
         }
     }
 }

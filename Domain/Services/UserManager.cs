@@ -30,7 +30,7 @@ namespace ReactDemo.Domain.Services
             var userIdentity = user.CreateIdentity();
             var roleIdentity = role.CreateIdentity();
             var principal = new ClaimsPrincipal(new List<ClaimsIdentity> { userIdentity, roleIdentity });
-            await _httpContext.SignInAsync(Startup.SchemeName, principal);
+            await _httpContext.SignInAsync(Startup.JwtConfig.SchemeName, principal);
         }
     }
 }

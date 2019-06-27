@@ -44,8 +44,6 @@ namespace ReactDemo.Application.Services
                 {
                     var role = await _roleRepository.FindOneAsync(r => r.ID == user.RoleID);
                     await _userManager.SignInAsync(user, role);
-                    var cookieValue = _httpContext.Request.Cookies[Startup.CookieName];
-                    _logger.LogDebug(cookieValue);
                     return true;
                 }
             }
@@ -62,7 +60,7 @@ namespace ReactDemo.Application.Services
                 _logger.LogDebug("get the username");
                 var user = await _userRepository.FindOneAsync(u => u.ID == id);
                 // var properties = user?.CreateAuthenticationProperties();
-                await _httpContext.SignOutAsync();
+                await _httpContext.SignOutAsync(Startup.JwtConfig.SchemeName);
             }
         }
     }

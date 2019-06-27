@@ -56,8 +56,6 @@ namespace ReactDemo.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromForm]UserDto userDto)
         {
-            var cookieValue = HttpContext.Request.Cookies[Startup.CookieName];
-            _logger.LogDebug($"cookie value:----------  {cookieValue}");
             if (ModelState.IsValid)
             {
                 string verifyCode = HttpContext.Session.GetString("verifyCode");

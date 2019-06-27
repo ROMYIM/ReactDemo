@@ -48,21 +48,21 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             IDataProtectionProvider provider,
             IDataSerializer<AuthenticationTicket> serializer) : base(options, logger, encoder, clock)
         {
-            var dataProtector = provider.CreateProtector(Startup.SchemeName);
+            var dataProtector = provider.CreateProtector(Startup.DefaultConfig.SecretKey);
             _format = new DefaultAuthenticationDataFormat(dataProtector, serializer);
         }
 
-        protected override async Task InitializeHandlerAsync()
+        protected override Task InitializeHandlerAsync()
         {
             if (Options == null)
             {
                 throw new NullReferenceException(nameof(Options));
             }
             Options.DataProcetor = Options.DataProcetor ?? _format.DataProcetor;
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        public async Task SignInAsync(ClaimsPrincipal user, AuthenticationProperties properties)
+        public Task SignInAsync(ClaimsPrincipal user, AuthenticationProperties properties)
         {
             if (user == null)
             {
@@ -94,10 +94,10 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             var authCookie = _format.Protect(ticket, token.Value);
 
             AppendResponseSigInCookie(token, authCookie);
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        public async Task SignOutAsync(AuthenticationProperties properties)
+        public Task SignOutAsync(AuthenticationProperties properties)
         {
             properties = properties ?? new AuthenticationProperties();
             properties.RedirectUri = Options.LoginPath;
@@ -107,7 +107,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             var cookieName = Options.CookieName ?? DefaultCookieName;
             cookies.Delete(tokenName);
             cookies.Delete(cookieName);
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             }
         }
 
-        private async Task<AuthenticateResult> CreateAuthenticatedResultAsync(Claim userClaim, Claim roleClaim, AuthenticationProperties properties)
+        private Task<AuthenticateResult> CreateAuthenticatedResultAsync(Claim userClaim, Claim roleClaim, AuthenticationProperties properties)
         {
             var claims = new List<Claim>{ userClaim, roleClaim };
             var identity = new ClaimsIdentity(claims, Scheme.Name);
@@ -154,8 +154,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                 properties.ExpiresUtc = DateTime.UtcNow.Add(Options.ExpiredTimeSpan);
             }
             var result = AuthenticateResult.Success(new AuthenticationTicket(principal, properties, Scheme.Name));
-            await Task.CompletedTask;
-            return result;
+            return Task.FromResult(result);
         }
 
         private void AppendResponseSigInCookie(AuthenticationToken token, string cookieValue)
