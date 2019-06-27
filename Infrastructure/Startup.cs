@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,7 @@ using ReactDemo.Domain.Services;
 using ReactDemo.Infrastructure.Config.Authentication;
 using ReactDemo.Infrastructure.Repositories;
 using ReactDemo.Infrastructure.Security.Authentication;
+using ReactDemo.Infrastructure.Security.Authorization;
 using ReactDemo.Infrastructure.Utils;
 
 namespace ReactDemo
@@ -77,6 +79,8 @@ namespace ReactDemo
             services.AddDataProtection();
             services.AddSingleton<IDataSerializer<AuthenticationTicket>, TicketSerializer>();
 
+            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+
             services.AddAuthentication(options => 
             {
                 options.DefaultAuthenticateScheme = DefaultConfig.SchemeName;
@@ -104,6 +108,7 @@ namespace ReactDemo
                 options.TokenName = DefaultConfig.TokenName;
                 options.Whitelist = DefaultConfig.WhiteList;
             });
+            
             
         }
 

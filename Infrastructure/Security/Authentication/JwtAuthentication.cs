@@ -1,7 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -53,6 +52,9 @@ namespace ReactDemo.Infrastructure.Security.Authentication
 
             var token = _tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
             var tokeText = _tokenHandler.WriteToken(token);
+
+            tokeText = "Bearer " + tokeText;
+            Response.Headers.Add("Authorization", tokeText);
 
             return Task.CompletedTask;
         }

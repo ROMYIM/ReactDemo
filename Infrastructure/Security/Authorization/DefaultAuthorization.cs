@@ -13,13 +13,13 @@ namespace ReactDemo.Infrastructure.Security.Authorization
     /// 一个程序中只能有一个策略提供程序。
     /// <see cref="https://docs.microsoft.com/zh-cn/aspnet/core/security/authorization/iauthorizationpolicyprovider?view=aspnetcore-2.2#use-a-custom-iauthorizationpolicyprovider"/>
     /// </summary>
-    public class DefaultAuthorizationPolicyProvider : IAuthorizationPolicyProvider
+    public class AuthorizationPolicyProvider : IAuthorizationPolicyProvider
     {
-        private readonly Microsoft.AspNetCore.Authorization.DefaultAuthorizationPolicyProvider _provider;
+        private readonly DefaultAuthorizationPolicyProvider _provider;
 
-        public DefaultAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
+        public AuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
         {
-            _provider = new Microsoft.AspNetCore.Authorization.DefaultAuthorizationPolicyProvider(options);
+            _provider = new DefaultAuthorizationPolicyProvider(options);
         }
 
         public async Task<AuthorizationPolicy> GetDefaultPolicyAsync()
