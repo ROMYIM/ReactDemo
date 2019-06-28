@@ -35,7 +35,11 @@ namespace ReactDemo.Infrastructure.Security.Authorization
             }
             var policyProperties = policyName.Split('-', 3, StringSplitOptions.RemoveEmptyEntries);
             var policyBuilder = new AuthorizationPolicyBuilder();
-            policyBuilder.AddRequirements(new DefaultRequirementAttribute(policyProperties[1], (ResourceOperation) Enum.Parse(typeof(ResourceOperation), policyProperties[2]), policyProperties[0]));
+            var requirements = new IAuthorizationRequirement[]
+            {
+                new DefaultRequirementAttribute(policyProperties[1], (ResourceOperation) Enum.Parse(typeof(ResourceOperation), policyProperties[2]), policyProperties[0])
+            };
+            policyBuilder.AddRequirements(requirements);
             return Task.FromResult(policyBuilder.Build());
         }
     }
