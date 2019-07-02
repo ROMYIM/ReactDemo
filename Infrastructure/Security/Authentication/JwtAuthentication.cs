@@ -64,5 +64,17 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             Logger.LogDebug("jwt logout");
             return Task.CompletedTask;
         }
+
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            var authenticateResult = base.HandleAuthenticateAsync();
+            return authenticateResult;
+        }
+
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        {
+            // Response.
+            return Task.CompletedTask;
+        }
     }
 }

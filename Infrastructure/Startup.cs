@@ -83,8 +83,10 @@ namespace ReactDemo
 
             services.AddAuthentication(options => 
             {
-                options.DefaultAuthenticateScheme = DefaultConfig.SchemeName;
-                options.DefaultSignInScheme = DefaultConfig.SchemeName;
+                options.DefaultAuthenticateScheme = JwtConfig.SchemeName;
+                options.DefaultSignInScheme = JwtConfig.SchemeName;
+                options.DefaultChallengeScheme = JwtConfig.SchemeName;
+
             }).AddScheme<JwtBearerOptions, JwtAuthenticationHandler>(JwtConfig.SchemeName, options => 
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -100,6 +102,7 @@ namespace ReactDemo
 
                 options.Audience = JwtConfig.Audience;
                 options.ClaimsIssuer = JwtConfig.Issuer;
+                
             }).AddScheme<DefaultAuthenticationOptions, DefaultAuthenticationHandler>(DefaultConfig.SchemeName, options => 
             {
                 options.LoginPath = new PathString(DefaultConfig.LoginPath);

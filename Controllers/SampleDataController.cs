@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Application.Services;
+using ReactDemo.Infrastructure.Security.Authorization;
 
 namespace ReactDemo.Controllers
 {
@@ -28,6 +30,17 @@ namespace ReactDemo.Controllers
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             });
+        }
+
+        [HttpGet("[action]")]
+        [DefaultRequirement(resource: "test", operation: ResourceOperation.Query)]
+        public string Test()
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return "success";
+            }
+            return "false";
         }
 
         public class WeatherForecast
