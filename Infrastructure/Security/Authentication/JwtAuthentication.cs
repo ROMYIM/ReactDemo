@@ -74,6 +74,8 @@ namespace ReactDemo.Infrastructure.Security.Authentication
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             // Response.
+            Logger.LogDebug("jwt authentication changellenge");
+            Logger.LogDebug($"authorizationHeader:{Request.Headers["Authorization"]}");
             return Task.CompletedTask;
         }
     }

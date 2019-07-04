@@ -83,7 +83,7 @@ namespace ReactDemo.Controllers
         public async Task<IActionResult> Logout()
         {
             await _userAppService.UserSignOutAsync();
-            return Ok();
+            return Ok("登出成功");
         }
     }
 }
