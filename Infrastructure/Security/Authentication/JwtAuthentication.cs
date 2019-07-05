@@ -64,5 +64,19 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             Logger.LogDebug("jwt logout");
             return Task.CompletedTask;
         }
+
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            var authenticateResult = base.HandleAuthenticateAsync();
+            return authenticateResult;
+        }
+
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        {
+            // Response.
+            Logger.LogDebug("jwt authentication changellenge");
+            Logger.LogDebug($"authorizationHeader:{Request.Headers["Authorization"]}");
+            return Task.CompletedTask;
+        }
     }
 }

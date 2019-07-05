@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Home } from "./Home";
+import { globalValue } from "../Global";
 import "./Login.css"
 
 export class Login extends Component {
@@ -64,6 +65,8 @@ export class Login extends Component {
             // headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }).then(response => {
             console.log(_this)
+            globalValue.Token = response.headers.get("Authorization");
+            console.log(globalValue.Token);
             const promise = response.text();        
             promise.then(value => {
                 if (value == '登录成功') {
