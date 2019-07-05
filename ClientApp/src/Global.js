@@ -1,5 +1,7 @@
 export const globalValue = new Global();
 
+
+
 function Global() {
     
     this._token = undefined;

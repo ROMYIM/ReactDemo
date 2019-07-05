@@ -116,6 +116,8 @@ namespace ReactDemo.Infrastructure.Security.Authentication
         /// <returns>身份验证结果 <see cref="AuthenticateResult"/></returns>
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
+            Logger.LogDebug("DefaultAuthentication Authenticate");
+
             var currentPath = Request.Path;
             Logger.LogDebug($"current path: {currentPath}");
 
@@ -133,8 +135,8 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                 var ticket = token == null ? _format.Unprotect(protectedCookie) : _format.Unprotect(protectedCookie, token);
                 var properties = ticket.Properties;
                 var principal = ticket.Principal;
-                var userClaim = principal.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier && c.ValueType == ClaimValueTypes.String);    
-                var roleClaim = principal.Claims.Single(c => c.Type == ClaimTypes.Role && c.ValueType == ClaimValueTypes.String);
+                var userClaim = principal.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier && c.ValueType == ClaimValueTypes.Integer32);    
+                var roleClaim = principal.Claims.Single(c => c.Type == ClaimTypes.Role && c.ValueType == ClaimValueTypes.Integer32);
                 return await CreateAuthenticatedResultAsync(userClaim, roleClaim, properties);
             }
             catch (System.Exception e)
@@ -142,6 +144,12 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                 Logger.LogError(e.Message);
                 return AuthenticateResult.Fail(e);
             }
+        }
+
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        {
+            Logger.LogDebug("DefaultAuthentication chanllenge");
+            return Task.CompletedTask;
         }
 
         private Task<AuthenticateResult> CreateAuthenticatedResultAsync(Claim userClaim, Claim roleClaim, AuthenticationProperties properties)

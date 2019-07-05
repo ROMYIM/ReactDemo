@@ -52,9 +52,9 @@ namespace ReactDemo.Infrastructure.Security.Authentication
 
             var token = _tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
             var tokeText = _tokenHandler.WriteToken(token);
+            // Response.Headers["Authorization"] = "Bearer " + tokeText;
 
-            tokeText = "Bearer " + tokeText;
-            Response.Headers.Add("Authorization", tokeText);
+            Context.SignInAsync(Startup.DefaultConfig.SchemeName, user);
 
             return Task.CompletedTask;
         }
@@ -62,21 +62,20 @@ namespace ReactDemo.Infrastructure.Security.Authentication
         public Task SignOutAsync(AuthenticationProperties properties)
         {
             Logger.LogDebug("jwt logout");
+            Response.Headers.Remove("Authorization");
             return Task.CompletedTask;
         }
 
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
-            var authenticateResult = base.HandleAuthenticateAsync();
-            return authenticateResult;
-        }
-
-        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             // Response.
             Logger.LogDebug("jwt authentication changellenge");
             Logger.LogDebug($"authorizationHeader:{Request.Headers["Authorization"]}");
-            return Task.CompletedTask;
+            
+            var result = await Context.AuthenticateAsync(Startup.DefaultConfig.SchemeName);
+            if (result.Succeeded)
+                await Task.CompletedTask;
+            
         }
     }
 }

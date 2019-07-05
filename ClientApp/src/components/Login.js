@@ -66,7 +66,6 @@ export class Login extends Component {
         }).then(response => {
             console.log(_this)
             globalValue.Token = response.headers.get("Authorization");
-            console.log(globalValue.Token);
             const promise = response.text();        
             promise.then(value => {
                 if (value == '登录成功') {
