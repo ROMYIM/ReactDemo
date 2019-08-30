@@ -61,8 +61,8 @@ namespace ReactDemo.Domain.Models.System
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, ID.Value.ToString(), ClaimValueTypes.Integer32),
-                new Claim(ClaimTypes.Name, Username, ClaimValueTypes.String)
+                new Claim("user_id", ID.Value.ToString(), ClaimValueTypes.Integer32),
+                new Claim("username", Username, ClaimValueTypes.String)
             };
 
             return new ClaimsIdentity(claims);

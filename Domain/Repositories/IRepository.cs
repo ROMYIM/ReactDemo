@@ -13,11 +13,11 @@ namespace ReactDemo.Domain.Repositories
 
         void Add(TEntity entity);
 
-        Task DeleteAsync(TEntity entity);
+        Task<int> DeleteAsync(TEntity entity);
 
         void Delete(TEntity entity);
 
-        Task UpdateAsync(TEntity entity);
+        Task<int> UpdateAsync(TEntity entity);
 
         void Update(TEntity entity);
 

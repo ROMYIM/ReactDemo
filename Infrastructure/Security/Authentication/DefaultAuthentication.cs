@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using ReactDemo.Infrastructure.Extensions;
+using ReactDemo.Infrastructure.Config.Cache;
 
 namespace ReactDemo.Infrastructure.Security.Authentication
 {
@@ -36,6 +38,8 @@ namespace ReactDemo.Infrastructure.Security.Authentication
     public class DefaultAuthenticationHandler : AuthenticationHandler<DefaultAuthenticationOptions>, IAuthenticationSignInHandler, IAuthenticationSignOutHandler
     {
         private readonly IAuthenticationTicketDataFormat _format;
+
+        private readonly RedisOptions _redisOptions;
         
         private const string DefaultTokenName = "auth token";
 
@@ -46,10 +50,12 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             ILoggerFactory logger, UrlEncoder encoder, 
             ISystemClock clock, 
             IDataProtectionProvider provider,
-            IDataSerializer<AuthenticationTicket> serializer) : base(options, logger, encoder, clock)
+            IDataSerializer<AuthenticationTicket> serializer,
+            IOptionsMonitor<RedisOptions> optionsAccessor) : base(options, logger, encoder, clock)
         {
             var dataProtector = provider.CreateProtector(Startup.DefaultConfig.SecretKey);
             _format = new DefaultAuthenticationDataFormat(dataProtector, serializer);
+            _redisOptions = optionsAccessor.CurrentValue;
         }
 
         protected override Task InitializeHandlerAsync()
@@ -88,7 +94,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             properties.StoreTokens(tokens);
             properties.ExpiresUtc = properties.IssuedUtc.Value.Add(Options.ExpiredTimeSpan);
 
-            Context.User = user;
+            SaveCache(user);
 
             var ticket = new AuthenticationTicket(user, properties, Scheme.Name);
             var authCookie = _format.Protect(ticket, token.Value);
@@ -114,7 +120,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
         /// 身份验证处理主体
         /// </summary>
         /// <returns>身份验证结果 <see cref="AuthenticateResult"/></returns>
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             Logger.LogDebug("DefaultAuthentication Authenticate");
 
@@ -124,7 +130,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             var isWhitelist = Options.Whitelist?.Exists(path => Regex.IsMatch(currentPath, path)) ?? false;
             if (isWhitelist || currentPath == Options.LoginPath)
             {
-                return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(), new AuthenticationProperties(), Scheme.Name));
+                return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(), new AuthenticationProperties(), Scheme.Name)));
                 // return AuthenticateResult.NoResult();
             }
 
@@ -135,14 +141,14 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                 var ticket = token == null ? _format.Unprotect(protectedCookie) : _format.Unprotect(protectedCookie, token);
                 var properties = ticket.Properties;
                 var principal = ticket.Principal;
-                var userClaim = principal.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier && c.ValueType == ClaimValueTypes.Integer32);    
-                var roleClaim = principal.Claims.Single(c => c.Type == ClaimTypes.Role && c.ValueType == ClaimValueTypes.Integer32);
-                return await CreateAuthenticatedResultAsync(userClaim, roleClaim, properties);
+                var userClaim = principal.Claims.Single(c => c.Type == "user_id");    
+                var roleClaim = principal.Claims.Single(c => c.Type == "role_id");
+                return CreateAuthenticatedResultAsync(userClaim, roleClaim, properties);
             }
             catch (System.Exception e)
             {
                 Logger.LogError(e.Message);
-                return AuthenticateResult.Fail(e);
+                return Task.FromResult(AuthenticateResult.Fail(e));
             }
         }
 
@@ -185,6 +191,14 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             cookies.Delete(cookieName);
             cookies.Append(token.Name, token.Value);
             cookies.Append(cookieName, cookieValue);
+        }
+
+        private void SaveCache(ClaimsPrincipal userInfo)
+        {
+            IEnumerable<Claim> claims = userInfo.Claims;
+            var cacheInfo = claims.ToDictionary(key => key.Type, element => element.Value);
+            var cacheKey = $"{_redisOptions.Name}_user_id_{cacheInfo["user_id"]}";
+            Context.Session.Set<Dictionary<string, string>>(cacheKey, cacheInfo);
         }
     }
 

@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,23 +20,28 @@ using ReactDemo.Application.Services;
 using ReactDemo.Domain.Repositories;
 using ReactDemo.Domain.Services;
 using ReactDemo.Infrastructure.Config.Authentication;
+using ReactDemo.Infrastructure.Config.Cache;
 using ReactDemo.Infrastructure.Repositories;
 using ReactDemo.Infrastructure.Security.Authentication;
 using ReactDemo.Infrastructure.Security.Authorization;
 using ReactDemo.Infrastructure.Utils;
+using StackExchange.Redis;
 
 namespace ReactDemo
 {
     public class Startup
     {
-        public static JwtConfig JwtConfig { private set; get; }
+        public static JwtOptions JwtConfig { private set; get; }
 
-        public static DefaultConfig DefaultConfig { private set; get;}
+        public static DefaultOptions DefaultConfig { private set; get;}
+
+        public static RedisOptions RedisConfig { get; private set; }
 
         public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
-            var authenticationConfig = Configuration.GetSection("Authentication").Get<AuthenticationConfig>();
+            var authenticationConfig = Configuration.GetSection("Authentication").Get<Infrastructure.Config.Authentication.AuthenticationOptions>();
+            RedisConfig = Configuration.GetSection("Redis").Get<RedisOptions>();
             JwtConfig = authenticationConfig.Jwt;
             DefaultConfig = authenticationConfig.Default;
             _logger = loggerFactory.CreateLogger<Startup>();
@@ -47,20 +54,41 @@ namespace ReactDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySQL(Configuration.GetConnectionString("MySQL")));
 
-            services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySQL(Configuration.GetConnectionString("test")));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+
             services.AddTransient<IUserAppService, UserAppService>();
             services.AddTransient<IUserManager, UserManager>();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigins", builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000")
+                        .WithMethods("post", "get")
+                        .WithHeaders("Origin", "Content-Type", "Accept", "Authorization");
+                    builder.AllowCredentials();
+                });
+            });
+
             services.AddSession(options => 
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(10);
                 options.Cookie.HttpOnly = true;
-                options.Cookie.Name = DefaultConfig.CookieName;
+                options.Cookie.Name = "SessionID";
             });
-            services.AddDistributedMemoryCache();
+
+            // redis缓存
+            services.AddStackExchangeRedisCache(options => 
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = RedisConfig.Name;
+            });
+
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -76,7 +104,8 @@ namespace ReactDemo
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDataProtection();
+            var redisConnect = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
+            services.AddDataProtection().PersistKeysToStackExchangeRedis(redisConnect, RedisConfig.Name + "DataProtection-Keys");                                                            
             services.AddSingleton<IDataSerializer<AuthenticationTicket>, TicketSerializer>();
 
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
@@ -112,7 +141,12 @@ namespace ReactDemo
                 options.Whitelist = DefaultConfig.WhiteList;
             });
             
-            
+            // 选项配置。读取配置文件中的选项并注册到容器中。选项配置就可以通过依赖注入到其他组件中
+            services.Configure<RedisOptions>(Configuration.GetSection("Redis"));
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowSpecificOrigins"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -131,8 +165,11 @@ namespace ReactDemo
             // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
+            app.UseCors("AllowSpecificOrigins");
             app.UseSession();
             app.UseAuthentication();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -142,13 +179,14 @@ namespace ReactDemo
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "ClientApp";
+                spa.Options.SourcePath = "ClientApp"; 
 
-                if (env.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
+                // if (env.IsDevelopment())
+                // {
+                //     spa.UseReactDevelopmentServer(npmScript: "start");
+                // }
             });
+
         }
     }
 }

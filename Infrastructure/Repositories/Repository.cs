@@ -26,25 +26,26 @@ namespace ReactDemo.Infrastructure.Repositories
             _httpContext = httpContextAccessor.HttpContext;
         }
 
-        async Task IRepository<TEntity>.AddAsync(TEntity entity)
+        Task IRepository<TEntity>.AddAsync(TEntity entity)
         {
-            await _entities.AddAsync(entity);
+            _entities.AddAsync(entity);
+            return Task.CompletedTask;
         }
 
-        async Task IRepository<TEntity>.DeleteAsync(TEntity entity)
+        Task<int> IRepository<TEntity>.DeleteAsync(TEntity entity)
         {
             _entities.Remove(entity);
-            await _databaseContext.SaveChangesAsync();
+            return _databaseContext.SaveChangesAsync();
         }
 
-        async Task<List<TEntity>> IRepository<TEntity>.FindListAsync(Expression<Func<TEntity, bool>> predicate)
+        Task<List<TEntity>> IRepository<TEntity>.FindListAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await  _entities.Where(predicate).ToListAsync();
+            return  _entities.Where(predicate).ToListAsync();
         }
 
-        async Task<TEntity> IRepository<TEntity>.FindOneAsync(Expression<Func<TEntity, bool>> predicate)
+        Task<TEntity> IRepository<TEntity>.FindOneAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await _entities.SingleAsync(predicate);
+            return _entities.SingleAsync(predicate);
         }
 
         void IRepository<TEntity>.Update(TEntity entity)
@@ -57,15 +58,15 @@ namespace ReactDemo.Infrastructure.Repositories
             return _databaseContext.SaveChanges();
         }
 
-        async Task<List<TEntity>> IRepository<TEntity>.FindListAsync(Expression<Func<TEntity, bool>> predicate, Page page)
+        Task<List<TEntity>> IRepository<TEntity>.FindListAsync(Expression<Func<TEntity, bool>> predicate, Page page)
         {
             if (page != null)
             {
-                return await _entities.Where(predicate).OrderByDescending(e => e.CreateTime).Skip(page.Index).Take(page.Count).ToListAsync();
+                return _entities.Where(predicate).OrderByDescending(e => e.CreateTime).Skip(page.Index).Take(page.Count).ToListAsync();
             }
             else
             {
-                return await _entities.Where(predicate).OrderByDescending(e => e.CreateTime).ToListAsync();
+                return _entities.Where(predicate).OrderByDescending(e => e.CreateTime).ToListAsync();
             }
         }
 
@@ -79,10 +80,10 @@ namespace ReactDemo.Infrastructure.Repositories
             _entities.Remove(entity);
         }
 
-        async Task IRepository<TEntity>.UpdateAsync(TEntity entity)
+        Task<int> IRepository<TEntity>.UpdateAsync(TEntity entity)
         {
             _entities.Update(entity);
-            await _databaseContext.SaveChangesAsync();
+            return _databaseContext.SaveChangesAsync();
         }
     }
 }

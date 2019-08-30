@@ -1,24 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ReactDemo.Application.Dtos;
-using ReactDemo.Application.Services;
+using ReactDemo.Infrastructure.Error;
 using ReactDemo.Infrastructure.Security.Authorization;
+using ReactDemo.Presentation.ViewObject;
 
-namespace ReactDemo.Controllers
+namespace ReactDemo.Presentation.Controllers
 {
     [Route("api/[controller]")]
-    public class SampleDataController : Controller
+    public class SampleDataController : BaseController
     {
 
         private static string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
+
+        public SampleDataController(ILoggerFactory loggerFactory) : base(loggerFactory)
+        {
+        }
 
         [HttpGet("[action]")]
         public IEnumerable<WeatherForecast> WeatherForecasts()
@@ -34,13 +36,13 @@ namespace ReactDemo.Controllers
 
         [HttpGet("[action]")]
         [DefaultRequirement(resource: "test", operation: ResourceOperation.Query)]
-        public string Test()
+        public ActionResult<ReturnData> Test()
         {
             if (HttpContext.User.Identity.IsAuthenticated)
             {
-                return "success";
+                return Ok("测试成功");
             }
-            return "false";
+            throw new BusinessException(ErrorCode.AuthenticationFail);
         }
 
         public class WeatherForecast

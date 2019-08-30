@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -9,6 +10,9 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using ReactDemo.Infrastructure.Config.Cache;
+using ReactDemo.Infrastructure.Extensions;
+using System.Collections.Generic;
 
 namespace ReactDemo.Infrastructure.Security.Authentication
 {
@@ -18,9 +22,12 @@ namespace ReactDemo.Infrastructure.Security.Authentication
 
         private readonly JwtSecurityTokenHandler _tokenHandler;
 
-        public JwtAuthenticationHandler(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, IDataProtectionProvider dataProtection, ISystemClock clock) : base(options, logger, encoder, dataProtection, clock)
+        private readonly RedisOptions _redisOptions;
+
+        public JwtAuthenticationHandler(IOptionsMonitor<JwtBearerOptions> options, IOptionsMonitor<RedisOptions> redisOptions, ILoggerFactory logger, UrlEncoder encoder, IDataProtectionProvider dataProtection, ISystemClock clock) : base(options, logger, encoder, dataProtection, clock)
         {
             _tokenHandler = new JwtSecurityTokenHandler();
+            _redisOptions = redisOptions.CurrentValue;
         }
 
         public Task SignInAsync(ClaimsPrincipal user, AuthenticationProperties properties)
@@ -52,7 +59,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
 
             var token = _tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
             var tokeText = _tokenHandler.WriteToken(token);
-            // Response.Headers["Authorization"] = "Bearer " + tokeText;
+            Response.Headers["Authorization"] = "Bearer " + tokeText;
 
             Context.SignInAsync(Startup.DefaultConfig.SchemeName, user);
 
@@ -76,6 +83,49 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             if (result.Succeeded)
                 await Task.CompletedTask;
             
+        }
+
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            Logger.LogInformation(Request.Path);
+            Logger.LogInformation(Request.Headers["Authorization"]);
+            var result = await base.HandleAuthenticateAsync();
+            if (result.Succeeded)
+            {
+                var idClaim = result.Principal.Claims.Single(c => c.Type == "user_id");
+                if (idClaim == null)
+                {
+                    Logger.LogError("找不到用户ID");
+                    return AuthenticateResult.NoResult();
+                }
+
+                var cacheKey = $"{_redisOptions.Name}_{idClaim.Type}_{idClaim.Value}";
+                var userInfo = Context.Session.Get<Dictionary<string, string>>(cacheKey);
+
+                var userIdentity = new ClaimsIdentity();
+                userIdentity.AddClaims(new List<Claim>
+                {
+                    new Claim("user_id", userInfo["user_id"]),
+                    new Claim("username", userInfo["username"])
+                });
+
+                var roleIdentity = new ClaimsIdentity();
+                roleIdentity.AddClaims(new List<Claim>
+                {
+                    new Claim("role_id", userInfo["role_id"]),
+                    new Claim("role_name", userInfo["role_name"])
+                });
+
+                var user = new ClaimsPrincipal();
+                user.AddIdentities(new List<ClaimsIdentity>
+                {
+                    userIdentity,
+                    roleIdentity
+                });
+
+                Context.User = user;
+            }
+            return result;
         }
     }
 }

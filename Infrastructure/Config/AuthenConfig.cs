@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace ReactDemo.Infrastructure.Config.Authentication
 {
-    public class JwtConfig
+    public class JwtOptions
     {
         public string SchemeName { get; set; }
 
@@ -13,7 +13,7 @@ namespace ReactDemo.Infrastructure.Config.Authentication
         public string Audience { get; set; }
     }
 
-    public class DefaultConfig
+    public class DefaultOptions
     {
         public string SchemeName { get; set; }
 
@@ -30,10 +30,10 @@ namespace ReactDemo.Infrastructure.Config.Authentication
         public List<string> WhiteList { get; set; }
     }
 
-    public class AuthenticationConfig
+    public class AuthenticationOptions
     {
-        public JwtConfig Jwt { get; set; }
+        public JwtOptions Jwt { get; set; }
 
-        public DefaultConfig Default { get; set; }
+        public DefaultOptions Default { get; set; }
     }
 }

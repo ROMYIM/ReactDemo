@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Home } from "./Home";
-import { globalValue } from "../Global";
+import { globalValue } from "../config";
 import "./Login.css"
 
 export class Login extends Component {
@@ -12,7 +12,7 @@ export class Login extends Component {
             username: '',
             password: '',
             verifyCode: '',
-            codeUrl: '/user/verifycode',
+            codeUrl: 'http://localhost:5000/user/verifycode',
             seed: new Date().getTime(),
             loginFlag: false
         }
@@ -58,24 +58,24 @@ export class Login extends Component {
         formData.append('username', this.state.username);
         formData.append('password', this.state.password);
         formData.append('verifycode', this.state.verifyCode);
-        fetch('/user/login', {
+        fetch('http://localhost:5000/user/login', {
             method: 'post',
             body: formData,
-            credentials: "same-origin",
+            credentials: "include"
             // headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }).then(response => {
             console.log(_this)
             globalValue.Token = response.headers.get("Authorization");
-            const promise = response.text();        
+            const promise = response.json();        
             promise.then(value => {
-                if (value == '登录成功') {
-                    alert(value);
+                if (value.code == 0) {
                     _this.setState({
                         loginFlag: true
                     })
                 }
+                alert(value.message);
             }, reason => {
-                alert(reason);
+                alert(reason.message);
                 _this.updateVerifyCodePicture()
             });
         }).catch(data => alert(data))
