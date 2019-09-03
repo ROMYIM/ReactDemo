@@ -68,7 +68,7 @@ namespace ReactDemo.Domain.Models.System
             return new ClaimsIdentity(claims);
         }
 
-        public bool verifyPassword(string passwordInput)
+        public bool VerifyPassword(string passwordInput)
         {
             if (passwordInput == null)
             {
