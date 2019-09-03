@@ -155,7 +155,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
 
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
-            Logger.LogDebug("DefaultAuthentication chanllenge");
+            Logger.LogDebug("第二次身份认证失败");
             throw new BusinessException(ErrorCode.AuthenticationFail);
         }
 

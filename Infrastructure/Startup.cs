@@ -1,11 +1,13 @@
 using System;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -70,8 +72,10 @@ namespace ReactDemo
                 {
                     builder.WithOrigins("http://localhost:3000")
                         .WithMethods("post", "get")
-                        .WithHeaders("Origin", "Content-Type", "Accept", "Authorization");
+                        .WithHeaders("Origin", "Content-Type", "Accept", "Authorization")
+                        .WithExposedHeaders("Authorization");
                     builder.AllowCredentials();
+                    builder.AllowAnyHeader();
                 });
             });
 
@@ -158,6 +162,22 @@ namespace ReactDemo
             }
             else
             {
+                // var options = new ExceptionHandlerOptions
+                // {
+                //     ExceptionHandlingPath = "/Error",
+                //     ExceptionHandler = context =>
+                //     {
+                //         var error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+                //         if (_logger.IsEnabled(LogLevel.Critical))
+                //         {
+                //             _logger.LogCritical("Request Path {0}", context.Request.Path);
+                //             _logger.LogCritical("Response status {0}", context.Response.StatusCode);
+                //             _logger.LogCritical("Error Message: {0}", error?.Message);
+                //         }
+                //         return Task.CompletedTask;
+                //     }
+                // };
+                // app.UseExceptionHandler(options);
                 app.UseExceptionHandler("/Error");
                 // app.UseHsts();
             }
@@ -165,6 +185,7 @@ namespace ReactDemo
             // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+            app.UseStatusCodePagesWithRedirects("/Error/{0}");
 
             app.UseCors("AllowSpecificOrigins");
             app.UseSession();
