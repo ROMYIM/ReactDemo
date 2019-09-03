@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Home } from "./Home";
-import { globalValue } from "../config";
+import { globalValue } from "../Global";
 import "./Login.css"
 
 export class Login extends Component {
@@ -16,6 +16,9 @@ export class Login extends Component {
             seed: new Date().getTime(),
             loginFlag: false
         }
+
+        this.globalValue = globalValue;
+
         this.updateVerifyCodePicture = this.updateVerifyCodePicture.bind(this);
         this.userLogin = this.userLogin.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -65,7 +68,7 @@ export class Login extends Component {
             // headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }).then(response => {
             console.log(_this)
-            globalValue.Token = response.headers.get("Authorization");
+            _this.globalValue.Token = response.headers.get("Authorization");
             const promise = response.json();        
             promise.then(value => {
                 if (value.code == 0) {

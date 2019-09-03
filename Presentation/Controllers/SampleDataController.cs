@@ -9,7 +9,7 @@ using ReactDemo.Presentation.ViewObject;
 
 namespace ReactDemo.Presentation.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class SampleDataController : BaseController
     {
 

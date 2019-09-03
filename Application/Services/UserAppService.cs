@@ -40,7 +40,7 @@ namespace ReactDemo.Application.Services
             var user = await _userRepository.FindOneAsync(u => u.Username == userDto.Username);
             if (user != null)
             {
-                if (user.verifyPassword(userDto.Password))
+                if (user.VerifyPassword(userDto.Password))
                 {
                     var role = await _roleRepository.FindOneAsync(r => r.ID == user.RoleID);
                     await _userManager.SignInAsync(user, role);

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Header } from "./Header";
 import { Login } from "./Login";
-import { globalValue } from "../config.js";
+import { globalValue } from "../Global";
 import "./Home.css"
 
 export class Home extends Component {
@@ -9,6 +9,9 @@ export class Home extends Component {
 
     constructor(props, context) {
         super(props, context);
+
+        this.globalValue = globalValue;
+
         this.userLogout = this.userLogout.bind(this);
 		this.userTest = this.userTest.bind(this);
     }
@@ -30,16 +33,15 @@ export class Home extends Component {
     }
 
 	userTest(e) {
+        const _this = this;
 		const headers = new Headers();
-        headers.append("Authorization", globalValue.Token);
-        fetch('http://localhost:5000/sample/test', {
+        headers.append("Authorization", _this.globalValue.Token);
+        fetch('http://localhost:5000/sampledata/test', {
             method: 'get',
             headers: headers,
             credentials: "include"
         }).then(response => {
-            console.log('response.headers.Authorization', response.headers.Authorization);
-            globalValue.Token = response.headers.get("Authorization");
-            console.log(globalValue.Token)
+            _this.globalValue.Token = response.headers.get("Authorization");
             const promise = response.json();
             promise.then(result => {
                 if (result.code == -1) {
