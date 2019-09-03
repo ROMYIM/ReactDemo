@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using ReactDemo.Infrastructure.Extensions;
 using ReactDemo.Infrastructure.Config.Cache;
+using ReactDemo.Infrastructure.Error;
 
 namespace ReactDemo.Infrastructure.Security.Authentication
 {
@@ -155,7 +156,7 @@ namespace ReactDemo.Infrastructure.Security.Authentication
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             Logger.LogDebug("DefaultAuthentication chanllenge");
-            return Task.CompletedTask;
+            throw new BusinessException(ErrorCode.AuthenticationFail);
         }
 
         private Task<AuthenticateResult> CreateAuthenticatedResultAsync(Claim userClaim, Claim roleClaim, AuthenticationProperties properties)

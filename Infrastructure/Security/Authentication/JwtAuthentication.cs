@@ -99,9 +99,18 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                     return AuthenticateResult.NoResult();
                 }
 
+                /// <summary>
+                /// 从session中（项目配置的是redis缓存）获取用户的缓存数据
+                /// </summary>
+                /// <value>用户在缓存中的数据</value>
                 var cacheKey = $"{_redisOptions.Name}_{idClaim.Type}_{idClaim.Value}";
                 var userInfo = Context.Session.Get<Dictionary<string, string>>(cacheKey);
 
+                /// <summary>
+                /// 构建用户身份信息。分别是用户id和用户名。
+                /// 只做演示
+                /// </summary>
+                /// <returns>用户身份信息</returns>
                 var userIdentity = new ClaimsIdentity();
                 userIdentity.AddClaims(new List<Claim>
                 {
@@ -109,6 +118,10 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                     new Claim("username", userInfo["username"])
                 });
 
+                /// <summary>
+                /// 构建角色身份信息。只做演示
+                /// </summary>
+                /// <returns>用户的角色身份信息</returns>
                 var roleIdentity = new ClaimsIdentity();
                 roleIdentity.AddClaims(new List<Claim>
                 {
@@ -116,14 +129,25 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                     new Claim("role_name", userInfo["role_name"])
                 });
 
-                var user = new ClaimsPrincipal();
+                /// <summary>
+                /// 把缓存信息加入到<code>AuthenticationResult.Principal</code>
+                /// 注意：身份认证中间件会在最后把<code>AuthenticationResult.Principal</code>加入到<code>HttpContext.User</code>中。
+                /// 因此确保需要的缓存信息等其他用户数据添加到<code>AuthenticationResult.Principal</code>
+                /// </summary>
+                /// <returns></returns>
+                var user = result.Principal ?? new ClaimsPrincipal();
                 user.AddIdentities(new List<ClaimsIdentity>
                 {
                     userIdentity,
                     roleIdentity
                 });
 
+                /// <summary>
+                /// 如果<code>AuthenticationResult.Principal == null</code>，则直接把缓存信息存入到<code>HttpContext.User</code>中。
+                /// 注意：如果<code>AuthenticationResult.Principal != null</code>，则一定要存入<code>AuthenticationResult</code>中。
+                /// </summary>
                 Context.User = user;
+
             }
             return result;
         }
