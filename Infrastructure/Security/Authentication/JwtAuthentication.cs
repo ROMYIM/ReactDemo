@@ -73,18 +73,6 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             return Task.CompletedTask;
         }
 
-        protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
-        {
-            // Response.
-            Logger.LogDebug("jwt authentication changellenge");
-            Logger.LogDebug($"authorizationHeader:{Request.Headers["Authorization"]}");
-            
-            var result = await Context.AuthenticateAsync(Startup.DefaultConfig.SchemeName);
-            if (result.Succeeded)
-                await Task.CompletedTask;
-            
-        }
-
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             Logger.LogInformation(Request.Path);
@@ -148,7 +136,12 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                 /// </summary>
                 Context.User = user;
 
+                Context.Response.Headers["Authorization"] = "Bearer " + result.Properties.GetTokenValue("access_token");
+ 
             }
+            else
+                result = await Context.AuthenticateAsync(Startup.DefaultConfig.SchemeName);
+
             return result;
         }
     }

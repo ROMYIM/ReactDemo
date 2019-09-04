@@ -112,7 +112,9 @@ namespace ReactDemo
             services.AddDataProtection().PersistKeysToStackExchangeRedis(redisConnect, RedisConfig.Name + "DataProtection-Keys");                                                            
             services.AddSingleton<IDataSerializer<AuthenticationTicket>, TicketSerializer>();
 
+            // 注册自定义的授权策略提供程序和授权处理程序
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+            services.AddSingleton<IAuthorizationHandler, DefaultAuthorizationHandler>();
 
             services.AddAuthentication(options => 
             {
@@ -124,8 +126,8 @@ namespace ReactDemo
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    NameClaimType = ClaimTypes.NameIdentifier,
-                    RoleClaimType = ClaimTypes.Role,
+                    NameClaimType = "user_id",
+                    RoleClaimType = "role_id",
 
                     ValidIssuer = JwtConfig.Issuer,
                     ValidAudience = JwtConfig.Audience,
@@ -135,6 +137,8 @@ namespace ReactDemo
 
                 options.Audience = JwtConfig.Audience;
                 options.ClaimsIssuer = JwtConfig.Issuer;
+
+                options.SaveToken = true;
                 
             }).AddScheme<DefaultAuthenticationOptions, DefaultAuthenticationHandler>(DefaultConfig.SchemeName, options => 
             {
@@ -185,27 +189,27 @@ namespace ReactDemo
             // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            app.UseStatusCodePagesWithRedirects("/Error/{0}");
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             app.UseCors("AllowSpecificOrigins");
             app.UseSession();
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
+            app.UseMvc(/* routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
-            });
+            } */ );
 
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp"; 
 
-                // if (env.IsDevelopment())
-                // {
-                //     spa.UseReactDevelopmentServer(npmScript: "start");
-                // }
+                if (env.IsDevelopment())
+                {
+                    spa.UseReactDevelopmentServer(npmScript: "start");
+                }
             });
 
         }

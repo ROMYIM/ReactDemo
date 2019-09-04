@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { Header } from "./Header";
-import { Login } from "./Login";
 import { globalValue } from "../Global";
 import "./Home.css"
 
@@ -17,6 +15,7 @@ export class Home extends Component {
     }
     
     userLogout(e) {
+        const _this = this;
         const headers = new Headers();
         headers.append("Authorization", globalValue.Token);
         fetch('http://localhost:5000/user/logout', {
@@ -24,12 +23,12 @@ export class Home extends Component {
             headers: headers,
             credentials: "include"
         }).then(response => {
-            console.log('response.headers.Authorization', response.headers.Authorization);
-            globalValue.Token = '';
-            console.log(globalValue.Token)
+            console.log('response.headers.Authorization', response.headers.get("Authorization"));
+            _this.globalValue.Token = '';
+            console.log(_this.globalValue.Token)
             const promise = response.json();
             promise.then(result => alert(result.message));
-        }).catch(reason => alert(reason))
+        }).catch(reason => alert("系统异常"))
     }
 
 	userTest(e) {
@@ -43,12 +42,8 @@ export class Home extends Component {
         }).then(response => {
             _this.globalValue.Token = response.headers.get("Authorization");
             const promise = response.json();
-            promise.then(result => {
-                if (result.code == -1) {
-                    alert("系统异常");
-                }
-            });
-        }).catch(reason => alert(reason))
+            promise.then(result => alert(result.message));
+        }).catch(reason => alert("系统异常"))
 	}
 
     render() {

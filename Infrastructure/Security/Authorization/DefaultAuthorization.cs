@@ -85,19 +85,29 @@ namespace ReactDemo.Infrastructure.Security.Authorization
         {
             if (!context.User.Identity.IsAuthenticated)
             {
+                _logger.LogError("身份认证不通过");
+                context.Fail();
                 return Task.CompletedTask;
             }
 
             _logger.LogDebug(context.Resource.ToString());
 
             var principal = context.User;
-            var role = principal.FindFirstValue(ClaimTypes.Role);
+            var role = principal.FindFirstValue("role_name");
             if (role == "admin")
             {
+                _logger.LogInformation("授权通过");
                 context.Succeed(requirement);
             }
+            else
+            {
+                _logger.LogError("权限认证不通过");
+                context.Fail();
+            }
 
+            // context.Succeed(requirement);
             return Task.CompletedTask;
+
         }
     }
 }

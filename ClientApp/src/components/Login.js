@@ -81,7 +81,7 @@ export class Login extends Component {
                 alert(reason.message);
                 _this.updateVerifyCodePicture()
             });
-        }).catch(data => alert(data))
+        }).catch(data => alert("系统异常"))
     }
 
     updateVerifyCodePicture (e) {

@@ -142,9 +142,10 @@ namespace ReactDemo.Infrastructure.Security.Authentication
                 var ticket = token == null ? _format.Unprotect(protectedCookie) : _format.Unprotect(protectedCookie, token);
                 var properties = ticket.Properties;
                 var principal = ticket.Principal;
-                var userClaim = principal.Claims.Single(c => c.Type == "user_id");    
-                var roleClaim = principal.Claims.Single(c => c.Type == "role_id");
-                return CreateAuthenticatedResultAsync(userClaim, roleClaim, properties);
+                if (principal.Claims.Any(c => c.Type == "user_id") && principal.Claims.Any(c => c.Type == "role_id"))
+                    return CreateAuthenticatedResultAsync(principal, properties);
+                else
+                    throw new BusinessException(ErrorCode.AuthenticationFail);   
             }
             catch (System.Exception e)
             {
@@ -153,17 +154,8 @@ namespace ReactDemo.Infrastructure.Security.Authentication
             }
         }
 
-        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        private Task<AuthenticateResult> CreateAuthenticatedResultAsync(ClaimsPrincipal principal, AuthenticationProperties properties)
         {
-            Logger.LogDebug("第二次身份认证失败");
-            throw new BusinessException(ErrorCode.AuthenticationFail);
-        }
-
-        private Task<AuthenticateResult> CreateAuthenticatedResultAsync(Claim userClaim, Claim roleClaim, AuthenticationProperties properties)
-        {
-            var claims = new List<Claim>{ userClaim, roleClaim };
-            var identity = new ClaimsIdentity(claims, Scheme.Name);
-            var principal = new ClaimsPrincipal(identity);
             if (Options.SlidingExpiration)
             {
                 properties.ExpiresUtc = DateTime.UtcNow.Add(Options.ExpiredTimeSpan);
