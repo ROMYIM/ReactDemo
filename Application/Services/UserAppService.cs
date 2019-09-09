@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -13,9 +14,7 @@ namespace ReactDemo.Application.Services
     {
         private readonly IUserRepository _userRepository;
 
-        private readonly IRoleRepository _roleRepository;
-
-        private readonly IUserManager _userManager;
+        private readonly UserManager _userManager;
 
         private readonly HttpContext _httpContext;
 
@@ -23,13 +22,11 @@ namespace ReactDemo.Application.Services
 
         public UserAppService(
             IUserRepository userRepository, 
-            IRoleRepository roleRepository,
-            IUserManager userManager,
+            UserManager userManager,
             IHttpContextAccessor httpContextAccessor, 
             ILoggerFactory loggerFactory)
         {
             _userRepository = userRepository;
-            _roleRepository = roleRepository;
             _userManager = userManager;
             _httpContext = httpContextAccessor.HttpContext;
             _logger = loggerFactory.CreateLogger(this.GetType());
@@ -38,24 +35,20 @@ namespace ReactDemo.Application.Services
         async Task<bool> IUserAppService.UserSignInAsync(UserDto userDto)
         {
             var user = await _userRepository.FindOneAsync(u => u.Username == userDto.Username);
-            if (user != null)
+            if (user?.VerifyPassword(userDto.Password) ?? false)
             {
-                if (user.VerifyPassword(userDto.Password))
-                {
-                    var role = await _roleRepository.FindOneAsync(r => r.ID == user.RoleID);
-                    await _userManager.SignInAsync(user, role);
-                    return true;
-                }
+                await _userManager.SignInAsync(user);
+                return true;
             }
             return false;
         }
 
         async Task IUserAppService.UserSignOutAsync()
         {
-            var principalUser = _httpContext.User;
-            int id = 0;
+            var userCache = _httpContext.User;
+            uint id = 0;
             
-            if (int.TryParse(principalUser?.FindFirstValue(ClaimTypes.NameIdentifier) ?? null, out id))
+            if (uint.TryParse(userCache?.FindFirstValue("user_id") ?? null, out id))
             {
                 _logger.LogDebug("get the username");
                 var user = await _userRepository.FindOneAsync(u => u.ID == id);

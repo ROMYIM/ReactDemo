@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ReactDemo.Domain.Models.Location
 {
     [Owned]
-    public class Address : Entity
+    public class Address : Entity<uint>
     {
 
         [Column("province")]

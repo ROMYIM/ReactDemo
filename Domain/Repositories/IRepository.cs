@@ -7,7 +7,7 @@ using ReactDemo.Domain.Models;
 
 namespace ReactDemo.Domain.Repositories
 {
-    public interface IRepository<TEntity> where TEntity : IAggregateRoot
+    public interface IRepository<TEntity, TKey> where TEntity : IAggregateRoot<TKey>
     {
         Task AddAsync(TEntity entity);
 

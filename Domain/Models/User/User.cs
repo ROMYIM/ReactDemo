@@ -2,16 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Claims;
-using System.Security.Principal;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Internal;
+using ReactDemo.Domain.Models.Events;
+using UserModule = ReactDemo.Domain.Models.User;
 
-namespace ReactDemo.Domain.Models.System
+namespace ReactDemo.Domain.Models.User
 {
     [Table("user")]
-    public class User : AggregateRoot
+    public class User : AggregateRoot<uint>
     {
 
         private string _username;
@@ -50,10 +48,16 @@ namespace ReactDemo.Domain.Models.System
         [Column("image_url")]
         public string ImageUrl { get; set; }
 
-        [Column("role_id")]
-        public int RoleID { get; set; }
+        private List<Role> _roles;
+        public List<Role> Roles
+        {
+            get { return _lazyLoader.Load(this, ref _roles); }
+            set { _roles = value; }
+        }
+        
+        private string LatestLoginIp { get; set; }
 
-        // private Role _role;
+        private DateTime LatestLoginTime { get; set; }
 
         private User(ILazyLoader lazyLoader) : base(lazyLoader) {}
 
@@ -61,9 +65,12 @@ namespace ReactDemo.Domain.Models.System
         {
             var claims = new List<Claim>
             {
-                new Claim("user_id", ID.Value.ToString(), ClaimValueTypes.Integer32),
+                new Claim("user_id", ID.ToString(), ClaimValueTypes.Integer32),
                 new Claim("username", Username, ClaimValueTypes.String)
             };
+
+            var roles = Roles;
+            roles.ForEach(r => claims.AddRange(r.GetClaims()));
 
             return new ClaimsIdentity(claims);
         }
@@ -83,13 +90,11 @@ namespace ReactDemo.Domain.Models.System
             return Password == passwordInput;
         }
 
-        // public AuthenticationProperties CreateAuthenticationProperties()
-        // {
-        //     var propperties = new AuthenticationProperties();
-        //     propperties.IsPersistent = true;
-        //     propperties.IssuedUtc = DateTimeOffset.UtcNow;
-        //     return propperties;
-        // }
-        
+        public override IEvent<TSource> Event<TSource>()
+        {
+            
+            return (IEvent<TSource>) new LoginEvent(this);
+        }
+
     }
 }

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ReactDemo.Domain.Models
 {
-    public interface IEntity
+    public interface IEntity<TKey>
     {
-        int? ID { get; }
+        TKey ID { get; }
 
         DateTime CreateTime { get; }
     }

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Http;
-using ReactDemo.Domain.Models.System;
+using ReactDemo.Domain.Models.User;
 using ReactDemo.Domain.Repositories;
 
 namespace ReactDemo.Infrastructure.Repositories
 {
-    public class UserRepository : Repository<User>, IUserRepository
+    public class UserRepository : Repository<User, uint>, IUserRepository
     {
         public UserRepository(DatabaseContext databaseContext, IHttpContextAccessor httpContextAccessor) : base(databaseContext, httpContextAccessor)
         {

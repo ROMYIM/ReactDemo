@@ -59,10 +59,9 @@ namespace ReactDemo
             services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySQL(Configuration.GetConnectionString("MySQL")));
 
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IRoleRepository, RoleRepository>();
 
             services.AddTransient<IUserAppService, UserAppService>();
-            services.AddTransient<IUserManager, UserManager>();
+            services.AddTransient<UserManager>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 

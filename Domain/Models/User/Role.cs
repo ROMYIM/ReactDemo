@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Claims;
 
-namespace ReactDemo.Domain.Models.System
+namespace ReactDemo.Domain.Models.User
 {
 
     [Table("role")]
-    public class Role : AggregateRoot
+    public class Role : Entity<uint>
     {
         private string _name;
 
@@ -31,14 +31,14 @@ namespace ReactDemo.Domain.Models.System
             Name = name;
         }
 
-        public ClaimsIdentity CreateIdentity()
+        public IEnumerable<Claim> GetClaims()
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim("role_id", ID.Value.ToString(), ClaimValueTypes.Integer32),
+                new Claim("role_id", ID.ToString(), ClaimValueTypes.Integer32),
                 new Claim("role_name", Name)
             };
-            return new ClaimsIdentity(claims);
+            return claims;
         }
     }
 }

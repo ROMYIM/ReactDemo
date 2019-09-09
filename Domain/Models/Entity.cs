@@ -5,18 +5,18 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ReactDemo.Domain.Models
 {
-    public class Entity : IEntity
+    public abstract class Entity<TKey> : IEntity<TKey>
     {
 
-        protected int? _id;
+        protected TKey _id;
         [Key, Column("id")]
-        public int? ID
+        public TKey ID
         {
             get 
             { 
                 if (_id == null)
                 {
-                    throw new NullReferenceException("id can not bu null");
+                    throw new NullReferenceException("主键不能为空");
                 }
                 return _id;
             }
@@ -55,11 +55,13 @@ namespace ReactDemo.Domain.Models
             }
             
             // TODO: write your implementation of Equals() here
-            Entity entity = obj as Entity;
-            return (ID ?? throw new NullReferenceException(nameof(ID))) == entity?.ID;
+            Entity<TKey> entity = obj as Entity<TKey>;
+            return (ID ?? throw new NullReferenceException(nameof(ID))).Equals(entity.ID);
         }
-        
-        // override object.GetHashCode
-        public override int GetHashCode() => ID ?? base.GetHashCode();
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_id);
+        }
     }
 }

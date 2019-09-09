@@ -11,7 +11,7 @@ using ReactDemo.Domain.Repositories;
 
 namespace ReactDemo.Infrastructure.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : AggregateRoot
+    public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : AggregateRoot<TKey>
     {
 
         protected readonly DatabaseContext _databaseContext;
@@ -26,39 +26,39 @@ namespace ReactDemo.Infrastructure.Repositories
             _httpContext = httpContextAccessor.HttpContext;
         }
 
-        Task IRepository<TEntity>.AddAsync(TEntity entity)
+        Task IRepository<TEntity, TKey>.AddAsync(TEntity entity)
         {
             _entities.AddAsync(entity);
             return Task.CompletedTask;
         }
 
-        Task<int> IRepository<TEntity>.DeleteAsync(TEntity entity)
+        Task<int> IRepository<TEntity, TKey>.DeleteAsync(TEntity entity)
         {
             _entities.Remove(entity);
             return _databaseContext.SaveChangesAsync();
         }
 
-        Task<List<TEntity>> IRepository<TEntity>.FindListAsync(Expression<Func<TEntity, bool>> predicate)
+        Task<List<TEntity>> IRepository<TEntity, TKey>.FindListAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return  _entities.Where(predicate).ToListAsync();
         }
 
-        Task<TEntity> IRepository<TEntity>.FindOneAsync(Expression<Func<TEntity, bool>> predicate)
+        Task<TEntity> IRepository<TEntity, TKey>.FindOneAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return _entities.SingleAsync(predicate);
         }
 
-        void IRepository<TEntity>.Update(TEntity entity)
+        void IRepository<TEntity, TKey>.Update(TEntity entity)
         {
             _entities.Update(entity);
         }
 
-        int IRepository<TEntity>.SaveChanges()
+        int IRepository<TEntity, TKey>.SaveChanges()
         {
             return _databaseContext.SaveChanges();
         }
 
-        Task<List<TEntity>> IRepository<TEntity>.FindListAsync(Expression<Func<TEntity, bool>> predicate, Page page)
+        Task<List<TEntity>> IRepository<TEntity, TKey>.FindListAsync(Expression<Func<TEntity, bool>> predicate, Page page)
         {
             if (page != null)
             {
@@ -70,17 +70,17 @@ namespace ReactDemo.Infrastructure.Repositories
             }
         }
 
-        void IRepository<TEntity>.Add(TEntity entity)
+        void IRepository<TEntity, TKey>.Add(TEntity entity)
         {
             _entities.Add(entity);
         }
 
-        void IRepository<TEntity>.Delete(TEntity entity)
+        void IRepository<TEntity, TKey>.Delete(TEntity entity)
         {
             _entities.Remove(entity);
         }
 
-        Task<int> IRepository<TEntity>.UpdateAsync(TEntity entity)
+        Task<int> IRepository<TEntity, TKey>.UpdateAsync(TEntity entity)
         {
             _entities.Update(entity);
             return _databaseContext.SaveChangesAsync();

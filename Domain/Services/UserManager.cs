@@ -4,16 +4,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using ReactDemo.Domain.Models.System;
+using ReactDemo.Domain.Models.User;
 
 namespace ReactDemo.Domain.Services
 {
-    public interface IUserManager : IDomainService
-    {
-        Task SignInAsync(User user, Role userRole);
-    }
 
-    public class UserManager : IUserManager
+    public class UserManager : IDomainService
     {
         private readonly ILogger _logger;
 
@@ -25,11 +21,10 @@ namespace ReactDemo.Domain.Services
             _httpContext = httpContextAccessor.HttpContext;
         }
 
-        async Task IUserManager.SignInAsync(User user, Role role)
+        public async Task SignInAsync(User user)
         {
             var userIdentity = user.CreateIdentity();
-            var roleIdentity = role.CreateIdentity();
-            var principal = new ClaimsPrincipal(new List<ClaimsIdentity> { userIdentity, roleIdentity });
+            var principal = new ClaimsPrincipal(new List<ClaimsIdentity> { userIdentity });
             await _httpContext.SignInAsync(Startup.JwtConfig.SchemeName, principal);
         }
     }

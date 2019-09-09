@@ -1,7 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using ReactDemo.Domain.Models;
-using ReactDemo.Domain.Models.System;
+using ReactDemo.Domain.Models.User;
 
 namespace ReactDemo.Infrastructure.Repositories
 {

@@ -1,10 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using ReactDemo.Domain.Models.Events;
 
 namespace ReactDemo.Domain.Models.System
 {
     [Table("resource")]
-    public class Resource : AggregateRoot
+    public class Resource : AggregateRoot<uint>
     {
         private string _name;
 
@@ -43,6 +44,11 @@ namespace ReactDemo.Domain.Models.System
         {
             Name = name;
             Value = value;
+        }
+
+        public override IEvent<TSource> Event<TSource>()
+        {
+            throw new NotImplementedException();
         }
     }
 }
