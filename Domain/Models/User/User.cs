@@ -90,11 +90,5 @@ namespace ReactDemo.Domain.Models.User
             return Password == passwordInput;
         }
 
-        public override IEvent<TSource> Event<TSource>()
-        {
-            
-            return (IEvent<TSource>) new LoginEvent(this);
-        }
-
     }
 }

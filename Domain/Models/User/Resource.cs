@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using ReactDemo.Domain.Models.Events;
 
 namespace ReactDemo.Domain.Models.System
@@ -7,6 +8,10 @@ namespace ReactDemo.Domain.Models.System
     [Table("resource")]
     public class Resource : AggregateRoot<uint>
     {
+        public Resource(ILazyLoader lazyLoader) : base(lazyLoader)
+        {
+        }
+
         private string _name;
 
         [Column("name")]
@@ -39,16 +44,6 @@ namespace ReactDemo.Domain.Models.System
                 _value = value;
             }
         }
-   
-        public Resource(string name, string value)
-        {
-            Name = name;
-            Value = value;
-        }
 
-        public override IEvent<TSource> Event<TSource>()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -5,6 +5,6 @@ namespace ReactDemo.Domain.Models
 {
     public interface IAggregateRoot<TKey> : IEntity<TKey>
     {
-        IEnumerable<IEvent> DomainEvents { get; }
+        IEnumerable<IEvent<object>> DomainEvents { get; }
     }
 }
