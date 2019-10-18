@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models;
 using ReactDemo.Domain.Repositories;
+using ReactDemo.Infrastructure.Entities;
 
 namespace ReactDemo.Infrastructure.Repositories
 {
@@ -20,16 +21,18 @@ namespace ReactDemo.Infrastructure.Repositories
 
         protected readonly HttpContext _httpContext;
 
+        DbSet<TEntity> IRepository<TEntity, TKey>.DbSet => _entities;
+
         public Repository(DatabaseContext databaseContext, IHttpContextAccessor httpContextAccessor)
         {
             _databaseContext = databaseContext;
             _httpContext = httpContextAccessor.HttpContext;
         }
 
-        Task IRepository<TEntity, TKey>.AddAsync(TEntity entity)
+        Task<int> IRepository<TEntity, TKey>.AddAsync(TEntity entity)
         {
-            _entities.AddAsync(entity);
-            return Task.CompletedTask;
+            _entities.Add(entity);
+            return _databaseContext.SaveChangesAsync();
         }
 
         Task<int> IRepository<TEntity, TKey>.DeleteAsync(TEntity entity)

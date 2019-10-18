@@ -1,4 +1,5 @@
 using System;
+using ReactDemo.Infrastructure.Event.Events;
 using UserModule = ReactDemo.Domain.Models.User;
 
 namespace ReactDemo.Domain.Models.Events

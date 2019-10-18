@@ -1,13 +1,11 @@
 using System;
-using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+using AspectCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +24,7 @@ using ReactDemo.Infrastructure.Config.Cache;
 using ReactDemo.Infrastructure.Repositories;
 using ReactDemo.Infrastructure.Security.Authentication;
 using ReactDemo.Infrastructure.Security.Authorization;
+using ReactDemo.Infrastructure.Transaction.Attributes;
 using ReactDemo.Infrastructure.Utils;
 using StackExchange.Redis;
 
@@ -54,14 +53,16 @@ namespace ReactDemo
         private readonly ILogger<Startup> _logger;
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySQL(Configuration.GetConnectionString("MySQL")));
+            services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySql(Configuration.GetConnectionString("MySQL")));
 
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddTransient<IUserAppService, UserAppService>();
             services.AddTransient<UserManager>();
+
+            services.AddTransient<UnitOfWorkAttribute>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -154,6 +155,9 @@ namespace ReactDemo
             {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowSpecificOrigins"));
             });
+
+            services.ConfigureDynamicProxy();
+            return services.BuildDynamicProxyServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

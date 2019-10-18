@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using ReactDemo.Application.Dtos;
-using ReactDemo.Domain.Models;
+using ReactDemo.Infrastructure.Entities;
 
-namespace ReactDemo.Domain.Repositories
+namespace ReactDemo.Infrastructure.Repositories
 {
-    public interface IRepository<TEntity, TKey> where TEntity : IAggregateRoot<TKey>
+    public interface IRepository<TEntity, TKey> where TEntity : class, IAggregateRoot<TKey>
     {
-        Task AddAsync(TEntity entity);
+        Task<int> AddAsync(TEntity entity);
 
         void Add(TEntity entity);
 
@@ -28,5 +29,7 @@ namespace ReactDemo.Domain.Repositories
         Task<List<TEntity>> FindListAsync(Expression<Func<TEntity, bool>> predicate, Page page); 
 
         int SaveChanges();
+
+        DbSet<TEntity> DbSet { get; }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace ReactDemo.Domain.Models
+namespace ReactDemo.Infrastructure.Entities
 {
     public abstract class Entity<TKey> : IEntity<TKey>
     {
@@ -56,7 +56,7 @@ namespace ReactDemo.Domain.Models
             
             // TODO: write your implementation of Equals() here
             Entity<TKey> entity = obj as Entity<TKey>;
-            return (ID ?? throw new NullReferenceException(nameof(ID))).Equals(entity.ID);
+            return ID.Equals(entity.ID);
         }
 
         public override int GetHashCode()

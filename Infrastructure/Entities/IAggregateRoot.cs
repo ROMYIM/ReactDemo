@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using ReactDemo.Domain.Models.Events;
+using ReactDemo.Infrastructure.Event.Events;
 
-namespace ReactDemo.Domain.Models
+namespace ReactDemo.Infrastructure.Entities
 {
     public interface IAggregateRoot<TKey> : IEntity<TKey>
     {
-        IEnumerable<IEvent<object>> DomainEvents { get; }
+        IEnumerable<IEvent> DomainEvents { get; }
     }
 }

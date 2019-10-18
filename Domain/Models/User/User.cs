@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using ReactDemo.Domain.Models.Events;
-using UserModule = ReactDemo.Domain.Models.User;
+using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Repositories;
 
 namespace ReactDemo.Domain.Models.User
 {
     [Table("user")]
-    public class User : AggregateRoot<uint>
+    public class User : AggregateRoot<int>
     {
 
         private string _username;
@@ -48,11 +51,29 @@ namespace ReactDemo.Domain.Models.User
         [Column("image_url")]
         public string ImageUrl { get; set; }
 
+        // public List<UserRole> UserRoles { get; set; }
+
         private List<Role> _roles;
+
+        [NotMapped]
         public List<Role> Roles
         {
-            get { return _lazyLoader.Load(this, ref _roles); }
+            get 
+            { 
+                if (_roles == null)
+                {
+                    _roles = UserRoles.Select(ur => ur.Role).ToList();
+                }
+                return _roles;
+            }
             set { _roles = value; }
+        }
+
+        private List<UserRole> _userRoles;
+        public List<UserRole> UserRoles
+        {
+            get { return _lazyLoader.Load(this, ref _userRoles); }
+            private set { _userRoles = value; }
         }
         
         private string LatestLoginIp { get; set; }

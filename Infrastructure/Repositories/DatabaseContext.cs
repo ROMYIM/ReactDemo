@@ -18,6 +18,9 @@ namespace ReactDemo.Infrastructure.Repositories
         protected override void OnModelCreating  (ModelBuilder builder)
         {
             builder.Entity<User>().HasIndex(u => u.Username).HasName("username").IsUnique();
+            builder.Entity<UserRole>().HasKey(ur => new { ur.UserID, ur.RoleID });
+            // builder.Entity<UserRole>().HasOne(ur => ur.User).WithMany(u => u.UserRoles).HasForeignKey(ur => ur.UserID);
+            // builder.Entity<UserRole>().HasOne(ur => ur.Role).WithMany(r => r.UserRoles).HasForeignKey(ur => ur.RoleID);
         }
     }
 }
