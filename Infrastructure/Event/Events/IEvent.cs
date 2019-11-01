@@ -7,5 +7,7 @@ namespace ReactDemo.Infrastructure.Event.Events
         Guid ID { get; }
 
         DateTime TriggerTime { set; get; }
+
+        TSource GetSource<TSource>() where TSource : class;
     }
 }

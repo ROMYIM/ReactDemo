@@ -20,5 +20,11 @@ namespace ReactDemo.Infrastructure.Event.Events
         public Guid ID => _id;
 
         public DateTime TriggerTime { get; set; }
+
+        public TSource1 GetSource<TSource1>() where TSource1 : class
+        {
+            var source = Source as TSource1;
+            return source;
+        }
     }
 }

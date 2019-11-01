@@ -9,7 +9,7 @@ namespace ReactDemo.Infrastructure.Entities
 
         private List<IEvent> _events;
 
-        protected AggregateRoot(ILazyLoader lazyLoader) : base(lazyLoader)
+	protected AggregateRoot(ILazyLoader lazyLoader) : base(lazyLoader)
         {
             _events = new List<IEvent>();
         }
@@ -19,6 +19,21 @@ namespace ReactDemo.Infrastructure.Entities
             _events = new List<IEvent>();
         }
 
-        IEnumerable<IEvent> IAggregateRoot<TKey>.DomainEvents => _events;
+        public IEnumerable<IEvent> DomainEvents => _events.AsReadOnly();
+
+	public void AddEvent(IEvent @event)
+	{
+	    _events.Add(@event);
+	}
+
+	public void RemoveEvent(IEvent @event)
+	{
+	    _events.Remove(@event);
+	}
+
+	public void ClearEvents()
+	{
+	    _events.Clear();
+	}
     }
 }

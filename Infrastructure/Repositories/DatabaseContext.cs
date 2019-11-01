@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ReactDemo.Domain.Models.User;
 
@@ -21,6 +24,22 @@ namespace ReactDemo.Infrastructure.Repositories
             builder.Entity<UserRole>().HasKey(ur => new { ur.UserID, ur.RoleID });
             // builder.Entity<UserRole>().HasOne(ur => ur.User).WithMany(u => u.UserRoles).HasForeignKey(ur => ur.UserID);
             // builder.Entity<UserRole>().HasOne(ur => ur.Role).WithMany(r => r.UserRoles).HasForeignKey(ur => ur.RoleID);
+        }
+
+        public override int SaveChanges()
+        {
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries().ToList();
+            foreach (var entry in entries)
+            {
+                
+                
+            }
+            return base.SaveChangesAsync();
         }
     }
 }
