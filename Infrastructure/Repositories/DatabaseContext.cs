@@ -4,21 +4,21 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ReactDemo.Domain.Models.User;
 using ReactDemo.Infrastructure.Entities;
-using ReactDemo.Infrastructure.Event.Buses;
+using ReactDemo.Infrastructure.Event.Helpers;
 
 namespace ReactDemo.Infrastructure.Repositories
 {
     public class DatabaseContext : DbContext
     {
-        private readonly LocalEventBus _eventBus;
+        private readonly IEventHelper _eventHelper;
 
         public DbSet<User> Users { get; set; }
 
         public DbSet<Role> Roles { get; set; }
 
-        public DatabaseContext(DbContextOptions<DatabaseContext> options, LocalEventBus eventBus) : base(options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options, IEventHelper eventHelper) : base(options)
         {
-            _eventBus = eventBus;
+            _eventHelper = eventHelper;
         }
 
         protected override void OnModelCreating  (ModelBuilder builder)
@@ -31,6 +31,22 @@ namespace ReactDemo.Infrastructure.Repositories
 
         public override int SaveChanges()
         {
+            var entries = ChangeTracker.Entries().ToList();
+            foreach (var entry in entries)
+            {
+                var entity = entry.Entity as IGenerateDomainEvents;
+                if (entity != null)
+                {
+                    var events = entity.DomainEvents;
+                    foreach (var @event in events)
+                    {
+                        if (_eventHelper.HandleEventData(@event))
+                        {
+                            _eventHelper.Push(@event);
+                        }
+                    }
+                }
+            }
             return base.SaveChanges();
         }
 
@@ -43,7 +59,13 @@ namespace ReactDemo.Infrastructure.Repositories
                 if (entity != null)
                 {
                     var events = entity.DomainEvents;
-                    
+                    foreach (var @event in events)
+                    {
+                        if (_eventHelper.HandleEventData(@event))
+                        {
+                            _eventHelper.PushAsync(@event);
+                        }
+                    }
                 }
             }
             return base.SaveChangesAsync();

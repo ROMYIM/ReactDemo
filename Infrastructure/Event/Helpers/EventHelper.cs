@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ReactDemo.Infrastructure.Entities;
 using ReactDemo.Infrastructure.Event.Buses;
 using ReactDemo.Infrastructure.Event.Events;
@@ -26,7 +27,12 @@ namespace ReactDemo.Infrastructure.Event.Helpers
 
         void IEventHelper.Push(IEvent @event)
         {
-            throw new System.NotImplementedException();
+            _eventBus.Publish(@event);
+        }
+
+        Task IEventHelper.PushAsync(IEvent @event)
+        {
+            return _eventBus.PublishAsync(@event);
         }
     }
 }
