@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ReactDemo.Application.Dtos;
-using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Domain;
 
 namespace ReactDemo.Infrastructure.Repositories
 {

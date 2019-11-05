@@ -12,8 +12,7 @@ using ReactDemo.Domain.Models.User;
 using ReactDemo.Domain.Repositories;
 using ReactDemo.Domain.Services;
 using ReactDemo.Infrastructure.Event.Buses;
-using ReactDemo.Infrastructure.Event.Events.Domain;
-using ReactDemo.Infrastructure.Event.Handlers;
+using ReactDemo.Infrastructure.Event.Entities;
 using ReactDemo.Infrastructure.Transaction.Attributes;
 
 namespace ReactDemo.Application.Services

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ReactDemo.Domain.Models.User;
-using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Domain;
 using ReactDemo.Infrastructure.Event.Helpers;
 
 namespace ReactDemo.Infrastructure.Repositories

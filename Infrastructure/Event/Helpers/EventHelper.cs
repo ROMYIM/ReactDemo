@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Domain;
 using ReactDemo.Infrastructure.Event.Buses;
-using ReactDemo.Infrastructure.Event.Events;
+using ReactDemo.Infrastructure.Event.Entities;
 
 namespace ReactDemo.Infrastructure.Event.Helpers
 {

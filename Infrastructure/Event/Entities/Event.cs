@@ -1,6 +1,6 @@
 using System;
 
-namespace ReactDemo.Infrastructure.Event.Events
+namespace ReactDemo.Infrastructure.Event.Entities
 {
     public class Event<TSource> : EventArgs, IEvent
     {

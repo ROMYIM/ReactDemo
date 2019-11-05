@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using ReactDemo.Infrastructure.Event.Events;
+using ReactDemo.Infrastructure.Event.Entities;
 using ReactDemo.Infrastructure.Event.Handlers;
 
 namespace ReactDemo.Infrastructure.Event.Buses

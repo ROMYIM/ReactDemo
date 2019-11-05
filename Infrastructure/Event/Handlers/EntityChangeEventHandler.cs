@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
-using ReactDemo.Infrastructure.Event.Events;
-using ReactDemo.Infrastructure.Event.Events.Domain;
+using ReactDemo.Infrastructure.Event.Entities;
 using ReactDemo.Infrastructure.Repositories;
 
 namespace ReactDemo.Infrastructure.Event.Handlers.Domain

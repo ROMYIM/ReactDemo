@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ReactDemo.Application.Dtos;
-using ReactDemo.Domain.Models;
-using ReactDemo.Domain.Repositories;
-using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Domain;
 
 namespace ReactDemo.Infrastructure.Repositories
 {
