@@ -8,4 +8,7 @@ namespace ReactDemo.Infrastructure.Entities
 
         DateTime CreateTime { get; }
     }
+
+    public interface IEntity : IEntity<int> {}
+    
 }

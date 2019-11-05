@@ -24,7 +24,7 @@ namespace ReactDemo.Presentation.Controllers
             return base.Ok(returnData);
         }
 
-        public ActionResult<ReturnData> Ok(string message = "SUCCESS") => Ok(null, 0, message);
+        public ActionResult<ReturnData> Ok(string message = "SUCCESS") => Ok(null, message: message);
         
     }
 }

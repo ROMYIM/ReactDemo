@@ -26,5 +26,10 @@ namespace ReactDemo.Infrastructure.Event.Events
             var source = Source as TSource1;
             return source;
         }
+
+        public object GetSource()
+        {
+            return Source;
+        }
     }
 }

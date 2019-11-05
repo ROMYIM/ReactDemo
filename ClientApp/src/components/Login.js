@@ -12,7 +12,7 @@ export class Login extends Component {
             username: '',
             password: '',
             verifyCode: '',
-            codeUrl: 'http://localhost:5000/user/verifycode',
+            codeUrl: 'http://localhost:59950/user/verifycode',
             seed: new Date().getTime(),
             loginFlag: false
         }
@@ -61,7 +61,7 @@ export class Login extends Component {
         formData.append('username', this.state.username);
         formData.append('password', this.state.password);
         formData.append('verifycode', this.state.verifyCode);
-        fetch('http://localhost:5000/user/login', {
+        fetch('http://localhost:59950/user/login', {
             method: 'post',
             body: formData,
             credentials: "include"
@@ -71,7 +71,7 @@ export class Login extends Component {
             _this.globalValue.Token = response.headers.get("Authorization");
             const promise = response.json();        
             promise.then(value => {
-                if (value.code == 0) {
+                if (value.code === 0) {
                     _this.setState({
                         loginFlag: true
                     })

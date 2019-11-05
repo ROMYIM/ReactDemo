@@ -9,6 +9,7 @@ namespace ReactDemo.Infrastructure.Entities
     {
 
         protected TKey _id;
+
         [Key, Column("id")]
         public TKey ID
         {
@@ -20,6 +21,7 @@ namespace ReactDemo.Infrastructure.Entities
                 }
                 return _id;
             }
+            
             protected set => _id = value;
         }
 
@@ -33,10 +35,9 @@ namespace ReactDemo.Infrastructure.Entities
             CreateTime = DateTime.Now;
         }
 
-        protected Entity(ILazyLoader lazyLoader)
+        protected Entity(ILazyLoader lazyLoader) : this()
         {
             this._lazyLoader = lazyLoader;
-            CreateTime = DateTime.Now;
         }
 
         // override object.Equals
@@ -63,5 +64,10 @@ namespace ReactDemo.Infrastructure.Entities
         {
             return HashCode.Combine(_id);
         }
+    }
+
+    public class Entity : Entity<int>, IEntity
+    {
+        
     }
 }

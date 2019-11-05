@@ -8,6 +8,8 @@ namespace ReactDemo.Infrastructure.Event.Events
 
         DateTime TriggerTime { set; get; }
 
-        TSource GetSource<TSource>() where TSource : class;
+        // TSource GetSource<TSource>() where TSource : class;
+
+        object GetSource();
     }
 }

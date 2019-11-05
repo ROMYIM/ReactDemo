@@ -1,21 +1,24 @@
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ReactDemo.Domain.Models.User;
+using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Event.Buses;
 
 namespace ReactDemo.Infrastructure.Repositories
 {
     public class DatabaseContext : DbContext
     {
+        private readonly LocalEventBus _eventBus;
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<Role> Roles { get; set; }
 
-        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options, LocalEventBus eventBus) : base(options)
         {
-            
+            _eventBus = eventBus;
         }
 
         protected override void OnModelCreating  (ModelBuilder builder)
@@ -36,8 +39,12 @@ namespace ReactDemo.Infrastructure.Repositories
             var entries = ChangeTracker.Entries().ToList();
             foreach (var entry in entries)
             {
-                
-                
+                var entity = entry.Entity as IGenerateDomainEvents;
+                if (entity != null)
+                {
+                    var events = entity.DomainEvents;
+                    
+                }
             }
             return base.SaveChangesAsync();
         }

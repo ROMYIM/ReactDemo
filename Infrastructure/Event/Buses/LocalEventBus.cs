@@ -19,8 +19,15 @@ namespace ReactDemo.Infrastructure.Event.Buses
 
         void IPublisher.Publish<TEvent>(TEvent @event)
         {
-            var handlers = _handlerFactories[@event.GetType()];
-            
+            var handlers = _handlerFactory.GetHandlers<TEvent>();
+            foreach (var handler in handlers)
+            {
+                if (handler.CanHandle(@event))
+                {
+                    @event.TriggerTime = DateTime.Now;
+                    handler.Handle(@event);
+                }
+            }
         }
 
         Task IPublisher.PublishAsync<TEvent>(TEvent @event)
@@ -32,6 +39,7 @@ namespace ReactDemo.Infrastructure.Event.Buses
                 {
                     if (handler.CanHandle(@event))
                     {
+                        @event.TriggerTime = DateTime.Now;
                         handler.Handle(@event);
                     }
                 }

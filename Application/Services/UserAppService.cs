@@ -11,16 +11,14 @@ using ReactDemo.Application.Dtos;
 using ReactDemo.Domain.Models.User;
 using ReactDemo.Domain.Repositories;
 using ReactDemo.Domain.Services;
-using ReactDemo.Infrastructure.Event;
 using ReactDemo.Infrastructure.Event.Buses;
-using ReactDemo.Infrastructure.Event.Events;
 using ReactDemo.Infrastructure.Event.Events.Domain;
-using ReactDemo.Infrastructure.Event.Subscribers;
+using ReactDemo.Infrastructure.Event.Handlers;
 using ReactDemo.Infrastructure.Transaction.Attributes;
 
 namespace ReactDemo.Application.Services
 {
-    public class UserAppService : IUserAppService, IEventSubscriber
+    public class UserAppService : IUserAppService
     {
         private readonly IUserRepository _userRepository;
 
@@ -75,27 +73,6 @@ namespace ReactDemo.Application.Services
 		        await _httpContext.SignOutAsync(Startup.JwtConfig.SchemeName);
 	        }
 	    }
-
-        public void HandleUserUpdateEvent(object sender, IEvent @event)
-        {
-            var user = @event.GetSource<User>();
-            if (user != null)
-            {
-                _userRepository.Update(user);
-            }
-        }
-
-        public void GG(List<User> list)
-        {
-
-        }
-
-        public void Subscribe()
-        {
-            EventHandler<IEvent> @event = HandleUserUpdateEvent;
-            EventBus.Register<EntityUpdateEvent<User>>(@event);
-        }
-
 
     }
 

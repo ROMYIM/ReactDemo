@@ -4,14 +4,21 @@ using ReactDemo.Infrastructure.Event.Events;
 
 namespace ReactDemo.Infrastructure.Entities
 {
-    public interface IAggregateRoot<TKey> : IEntity<TKey>
+    public interface IAggregateRoot<TKey> : IEntity<TKey>, IGenerateDomainEvents
+    {
+        
+    }
+
+    public interface IAggregateRoot : IAggregateRoot<int> {}
+
+    public interface IGenerateDomainEvents
     {
         IEnumerable<IEvent> DomainEvents { get; }
 
-	void AddEvent(IEvent @event);
+        void AddEvent(IEvent @event);
 
-	void RemoveEvent(IEvent @event);
+        void RemoveEvent(IEvent @event);
 
-	void ClearEvents();
+        void ClearEvents();
     }
 }

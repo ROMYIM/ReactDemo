@@ -7,10 +7,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Application.Services;
+using ReactDemo.Domain.Models.User;
 using ReactDemo.Infrastructure.Error;
+using ReactDemo.Infrastructure.Event.Events.Domain;
+using ReactDemo.Infrastructure.Event.Handlers;
 using ReactDemo.Infrastructure.Extensions;
 using ReactDemo.Infrastructure.Utils;
 using ReactDemo.Presentation.ViewObject;
@@ -21,33 +25,37 @@ namespace ReactDemo.Presentation.Controllers
     public class UserController : BaseController
     {
         private readonly ImageUtil _imageUtil;
+
         private readonly IUserAppService _userAppService;
-        private readonly string _id;
 
         public UserController(ImageUtil imageUtil, ILoggerFactory loggerFactory, IUserAppService userAppService) : base(loggerFactory)
         {
             _imageUtil = imageUtil;
             _userAppService = userAppService;
-            _id = Guid.NewGuid().ToString();
         }
 
         [HttpGet("verifycode")]
         [AllowAnonymous]
         public IActionResult CreateVerifyCode([FromQuery(Name = "seed")]long seed)
         {
-            _logger.LogDebug($"controller id is {_id}");
             var guid = Guid.NewGuid().ToString();
+
             string pattern = "[A-Za-z0-9]";
             var result = Regex.Matches(guid, pattern);
+
             var random = new Random((int) seed);
+
             var verifyCodeBuilder = new StringBuilder();
             for (int i = 0; i < 4; i++)
             {
                 verifyCodeBuilder.Append(result[random.Next(result.Count)].ToString());
             }
+
             var verifyCode = verifyCodeBuilder.ToString();
             _logger.LogDebug(verifyCode);
+
             HttpContext.Session.SetString("verifyCode", verifyCode);
+            
             var memoryStream = _imageUtil.CreateVerifyCodePicture(verifyCode, random);
             Response.Body.Dispose();
             return File(memoryStream.ToArray(), @"image/png");
