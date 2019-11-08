@@ -7,15 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ReactDemo.Application.Dtos;
 using ReactDemo.Application.Services;
-using ReactDemo.Domain.Models.User;
 using ReactDemo.Infrastructure.Error;
-using ReactDemo.Infrastructure.Event.Events.Domain;
-using ReactDemo.Infrastructure.Event.Handlers;
-using ReactDemo.Infrastructure.Extensions;
 using ReactDemo.Infrastructure.Utils;
 using ReactDemo.Presentation.ViewObject;
 

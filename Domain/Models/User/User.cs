@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using ReactDemo.Infrastructure.Entities;
-using ReactDemo.Infrastructure.Repositories;
 
 namespace ReactDemo.Domain.Models.User
 {

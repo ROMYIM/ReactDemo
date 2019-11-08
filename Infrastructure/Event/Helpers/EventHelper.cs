@@ -9,12 +9,12 @@ namespace ReactDemo.Infrastructure.Event.Helpers
     {
         private readonly IEventBus _eventBus;
 
-        public EventHelper(LocalEventBus eventBus)
+        public EventHelper(IEventBus eventBus)
         {
             _eventBus = eventBus;
         }
 
-        bool IEventHelper.HandleEventData(IEvent @event)
+        public bool HandleEventData(IEvent @event)
         {
             var source = @event.GetSource() as IGenerateDomainEvents;
             if (source != null)
@@ -25,12 +25,12 @@ namespace ReactDemo.Infrastructure.Event.Helpers
             return true;
         }
 
-        void IEventHelper.Push(IEvent @event)
+        public void Push(IEvent @event)
         {
             _eventBus.Publish(@event);
         }
 
-        Task IEventHelper.PushAsync(IEvent @event)
+        public Task PushAsync(IEvent @event)
         {
             return _eventBus.PublishAsync(@event);
         }

@@ -1,3 +1,7 @@
+/*
+ * @Author: mk516189
+ * @Date: 2019-02-25 14:04:20
+ */
 import React, { Component } from 'react';
 import { globalValue } from "../Global";
 import "./Home.css"
@@ -18,7 +22,7 @@ export class Home extends Component {
         const _this = this;
         const headers = new Headers();
         headers.append("Authorization", globalValue.Token);
-        fetch('http://localhost:5000/user/logout', {
+        fetch('http://localhost:59950/user/logout', {
             method: 'get',
             headers: headers,
             credentials: "include"
@@ -35,7 +39,7 @@ export class Home extends Component {
         const _this = this;
 		const headers = new Headers();
         headers.append("Authorization", _this.globalValue.Token);
-        fetch('http://localhost:5000/sampledata/test', {
+        fetch('http://localhost:59950/sampledata/test', {
             method: 'get',
             headers: headers,
             credentials: "include"

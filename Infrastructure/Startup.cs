@@ -22,10 +22,11 @@ using ReactDemo.Domain.Repositories;
 using ReactDemo.Domain.Services;
 using ReactDemo.Infrastructure.Config.Authentication;
 using ReactDemo.Infrastructure.Config.Cache;
-using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Event.Buses;
 using ReactDemo.Infrastructure.Event.Events.Domain;
 using ReactDemo.Infrastructure.Event.Handlers;
 using ReactDemo.Infrastructure.Event.Handlers.Domain;
+using ReactDemo.Infrastructure.Event.Helpers;
 using ReactDemo.Infrastructure.Repositories;
 using ReactDemo.Infrastructure.Security.Authentication;
 using ReactDemo.Infrastructure.Security.Authorization;
@@ -60,7 +61,14 @@ namespace ReactDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<DatabaseContext>(optionBuilder => optionBuilder.UseMySql(Configuration.GetConnectionString("MySQL")));
+            services.AddSingleton<IEventBus, LocalEventBus>();
+            services.AddSingleton<IEventHelper, EventHelper>();
+
+            services.AddDbContextPool<DatabaseContext>((serviceProvider, optionBuilder) => 
+            {
+                optionBuilder.UseMySql(Configuration.GetConnectionString("MySQL"));
+                // optionBuilder.UseInternalServiceProvider(serviceProvider);
+            }, 100);
 
             services.AddScoped<IUserRepository, UserRepository>();
 
@@ -68,6 +76,8 @@ namespace ReactDemo
             services.AddTransient<UserManager>();
 
             services.AddTransient<UnitOfWorkAttribute>();
+
+            services.AddTransient<IEventHandler<EntityUpdateEvent<User>>, EntityUpdateEventHandler<User>>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 

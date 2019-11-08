@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ReactDemo.Infrastructure.Event.Events;
 using ReactDemo.Infrastructure.Event.Handlers;
 
@@ -12,12 +12,19 @@ namespace ReactDemo.Infrastructure.Event.Buses
     {
         private readonly HandlerFactory _handlerFactory;
 
-        public LocalEventBus(IServiceProvider serviceProvider)
+        private readonly ILogger _logger;
+
+        public LocalEventBus(
+            ILoggerFactory loggerFactory,
+            IServiceProvider serviceProvider)
         {
+            _logger = loggerFactory.CreateLogger(GetType());
+
             _handlerFactory = new HandlerFactory(serviceProvider);
+            _handlerFactory.Logger = loggerFactory.CreateLogger(_handlerFactory.GetType());
         }
 
-        void IPublisher.Publish<TEvent>(TEvent @event)
+        public void Publish<TEvent>(TEvent @event) where TEvent : IEvent
         {
             var handlers = _handlerFactory.GetHandlers<TEvent>();
             foreach (var handler in handlers)
@@ -30,7 +37,7 @@ namespace ReactDemo.Infrastructure.Event.Buses
             }
         }
 
-        Task IPublisher.PublishAsync<TEvent>(TEvent @event)
+        public Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
         {
             return Task.Run(() => 
             {
@@ -40,13 +47,13 @@ namespace ReactDemo.Infrastructure.Event.Buses
                     if (handler.CanHandle(@event))
                     {
                         @event.TriggerTime = DateTime.Now;
-                        handler.Handle(@event);
+                        handler.HandleAsync(@event);
                     }
                 }
             });
         }
 
-        void IEventBus.Register<TEvent>()
+        public void Register<TEvent>() where TEvent : IEvent
         {
             _handlerFactory.AddHandler<TEvent>();
         }
@@ -57,10 +64,18 @@ namespace ReactDemo.Infrastructure.Event.Buses
 
             private readonly IServiceProvider _servicePorvider;
 
+            public ILogger Logger { get; set; }
+
             internal HandlerFactory(IServiceProvider serviceProvider)
             {
                 _servicePorvider = serviceProvider;
                 _eventTypeSet = new HashSet<Type>();
+
+                IEnumerable<IEventHandler> handlers = serviceProvider.GetServices<IEventHandler>();
+                foreach (var handler in handlers)
+                {
+                    AddHandler(handler.GetEventType());
+                }
             }
 
 
@@ -78,7 +93,19 @@ namespace ReactDemo.Infrastructure.Event.Buses
 
             internal HandlerFactory AddHandler<TEvent>() where TEvent : IEvent
             {
-                _eventTypeSet.Add(typeof(TEvent));
+                if (!_eventTypeSet.Add(typeof(TEvent)))
+                {
+                    Logger.LogError("{0}  事件添加失败", typeof(TEvent).FullName);
+                }
+                return this;
+            }
+
+            internal HandlerFactory AddHandler(Type eventType)
+            {
+                if (!_eventTypeSet.Add(eventType))
+                {
+                    Logger.LogError("{0}  事件添加失败", eventType.FullName);
+                }
                 return this;
             }
         }

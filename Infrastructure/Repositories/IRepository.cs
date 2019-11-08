@@ -10,17 +10,17 @@ namespace ReactDemo.Infrastructure.Repositories
 {
     public interface IRepository<TEntity, TKey> where TEntity : class, IAggregateRoot<TKey>
     {
-        Task<int> AddAsync(TEntity entity);
+        Task<TEntity> AddAsync(TEntity entity);
 
-        void Add(TEntity entity);
+        TEntity Add(TEntity entity);
 
-        Task<int> DeleteAsync(TEntity entity);
+        Task<TEntity> DeleteAsync(TEntity entity);
 
-        void Delete(TEntity entity);
+        TEntity Delete(TEntity entity);
 
-        Task<int> UpdateAsync(TEntity entity);
+        Task<TEntity> UpdateAsync(TEntity entity);
 
-        void Update(TEntity entity);
+        TEntity Update(TEntity entity);
 
         Task<TEntity> FindOneAsync(Expression<Func<TEntity, bool>> predicate);
 

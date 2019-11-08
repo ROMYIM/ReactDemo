@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ReactDemo.Infrastructure.Event.Events;
 using ReactDemo.Infrastructure.Event.Events.Domain;
@@ -17,6 +18,11 @@ namespace ReactDemo.Infrastructure.Event.Handlers.Domain
         public virtual bool CanHandle(IEvent @event)
         {
             return @event != null && @event.GetSource() != null && @event is TEvent;
+        }
+
+        public virtual Type GetEventType()
+        {
+            return typeof(TEvent);
         }
 
         public abstract void Handle(TEvent @event);

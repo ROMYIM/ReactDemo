@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ReactDemo.Application.Dtos;
-using ReactDemo.Domain.Models;
-using ReactDemo.Domain.Repositories;
 using ReactDemo.Infrastructure.Entities;
 
 namespace ReactDemo.Infrastructure.Repositories
@@ -29,16 +27,17 @@ namespace ReactDemo.Infrastructure.Repositories
             _httpContext = httpContextAccessor.HttpContext;
         }
 
-        Task<int> IRepository<TEntity, TKey>.AddAsync(TEntity entity)
+        Task<TEntity> IRepository<TEntity, TKey>.AddAsync(TEntity entity)
         {
-            _entities.Add(entity);
-            return _databaseContext.SaveChangesAsync();
+            var entry = _entities.Add(entity);
+            
+            return Task.FromResult(entry.Entity);
         }
 
-        Task<int> IRepository<TEntity, TKey>.DeleteAsync(TEntity entity)
+        Task<TEntity> IRepository<TEntity, TKey>.DeleteAsync(TEntity entity)
         {
-            _entities.Remove(entity);
-            return _databaseContext.SaveChangesAsync();
+            var entry = _entities.Remove(entity);
+            return Task.FromResult(entry.Entity);
         }
 
         Task<List<TEntity>> IRepository<TEntity, TKey>.FindListAsync(Expression<Func<TEntity, bool>> predicate)
@@ -51,9 +50,9 @@ namespace ReactDemo.Infrastructure.Repositories
             return _entities.SingleAsync(predicate);
         }
 
-        void IRepository<TEntity, TKey>.Update(TEntity entity)
+        TEntity IRepository<TEntity, TKey>.Update(TEntity entity)
         {
-            _entities.Update(entity);
+            return _entities.Update(entity).Entity;
         }
 
         int IRepository<TEntity, TKey>.SaveChanges()
@@ -73,20 +72,20 @@ namespace ReactDemo.Infrastructure.Repositories
             }
         }
 
-        void IRepository<TEntity, TKey>.Add(TEntity entity)
+        TEntity IRepository<TEntity, TKey>.Add(TEntity entity)
         {
-            _entities.Add(entity);
+            return _entities.Add(entity).Entity;
         }
 
-        void IRepository<TEntity, TKey>.Delete(TEntity entity)
+        TEntity IRepository<TEntity, TKey>.Delete(TEntity entity)
         {
-            _entities.Remove(entity);
+            return _entities.Remove(entity).Entity;
         }
 
-        Task<int> IRepository<TEntity, TKey>.UpdateAsync(TEntity entity)
+        Task<TEntity> IRepository<TEntity, TKey>.UpdateAsync(TEntity entity)
         {
-            _entities.Update(entity);
-            return _databaseContext.SaveChangesAsync();
+            var entry = _entities.Update(entity);
+            return Task.FromResult(entry.Entity);
         }
     }
 }

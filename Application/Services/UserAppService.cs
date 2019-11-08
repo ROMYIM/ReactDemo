@@ -54,8 +54,10 @@ namespace ReactDemo.Application.Services
             {
                 await _userManager.SignInAsync(user);
 
-		        user.ImageUrl = "image url";
-		        user.AddEvent(new EntityUpdateEvent<User>(user));
+		        user.ImageUrl = "image_url_1";
+                user.AddEvent(new EntityUpdateEvent<User>(user));
+                _userRepository.Update(user);
+		        
                 return true;
             }
             return false;

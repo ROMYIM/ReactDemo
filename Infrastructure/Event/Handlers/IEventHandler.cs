@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ReactDemo.Infrastructure.Event.Events;
 
@@ -13,5 +14,7 @@ namespace ReactDemo.Infrastructure.Event.Handlers
     public interface IEventHandler
     {
         bool CanHandle(IEvent @event);
+
+        Type GetEventType();
     }
 }
