@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ReactDemo.Infrastructure.Event.Events.Domain
+namespace ReactDemo.Infrastructure.Event.Entities
 {
     public class EntityCreateEvent<TSource> : Event<TSource>
     {

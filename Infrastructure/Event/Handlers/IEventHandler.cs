@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using ReactDemo.Infrastructure.Event.Events;
+using ReactDemo.Infrastructure.Event.Entities;
 
 namespace ReactDemo.Infrastructure.Event.Handlers
 {

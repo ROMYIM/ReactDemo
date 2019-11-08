@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using ReactDemo.Infrastructure.Event.Events;
+using ReactDemo.Infrastructure.Event.Entities;
 
-namespace ReactDemo.Infrastructure.Entities
+namespace ReactDemo.Infrastructure.Domain
 {
     public abstract class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot<TKey>
     {

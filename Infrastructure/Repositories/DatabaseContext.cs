@@ -5,7 +5,7 @@ using AspectCore.Injector;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ReactDemo.Domain.Models.User;
-using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Domain;
 using ReactDemo.Infrastructure.Event.Helpers;
 
 namespace ReactDemo.Infrastructure.Repositories

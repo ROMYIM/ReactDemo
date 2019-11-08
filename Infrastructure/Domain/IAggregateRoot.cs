@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using ReactDemo.Domain.Models.Events;
-using ReactDemo.Infrastructure.Event.Events;
+using ReactDemo.Infrastructure.Event.Entities;
 
-namespace ReactDemo.Infrastructure.Entities
+namespace ReactDemo.Infrastructure.Domain
 {
     public interface IAggregateRoot<TKey> : IEntity<TKey>, IGenerateDomainEvents
     {

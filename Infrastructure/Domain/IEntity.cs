@@ -1,6 +1,6 @@
 using System;
 
-namespace ReactDemo.Infrastructure.Entities
+namespace ReactDemo.Infrastructure.Domain
 {
     public interface IEntity<TKey> 
     {

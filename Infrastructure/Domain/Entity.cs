@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace ReactDemo.Infrastructure.Entities
+namespace ReactDemo.Infrastructure.Domain
 {
     public abstract class Entity<TKey> : IEntity<TKey>
     {

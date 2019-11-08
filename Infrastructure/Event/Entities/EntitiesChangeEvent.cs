@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ReactDemo.Infrastructure.Event.Events.Domain
+namespace ReactDemo.Infrastructure.Event.Entities
 {
     public class EntitiesCreateEvent<TSources, TElement> : Event<TSources> where TSources : ICollection<TElement>
     {

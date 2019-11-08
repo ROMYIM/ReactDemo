@@ -77,8 +77,6 @@ namespace ReactDemo
 
             services.AddTransient<UnitOfWorkAttribute>();
 
-            services.AddTransient<IEventHandler<EntityUpdateEvent<User>>, EntityUpdateEventHandler<User>>();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddCors(options =>
