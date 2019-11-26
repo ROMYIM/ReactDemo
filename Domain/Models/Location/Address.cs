@@ -1,8 +1,7 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Domain;
 
 namespace ReactDemo.Domain.Models.Location
 {

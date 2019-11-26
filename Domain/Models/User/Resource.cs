@@ -1,8 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using ReactDemo.Domain.Models.Events;
-using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Domain;
 
 namespace ReactDemo.Domain.Models.System
 {

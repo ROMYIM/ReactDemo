@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ReactDemo.Application.Dtos;
-using ReactDemo.Domain.Models;
-using ReactDemo.Infrastructure.Entities;
+using ReactDemo.Infrastructure.Domain;
 
 namespace ReactDemo.Application.Services
 {
